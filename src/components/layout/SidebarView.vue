@@ -35,7 +35,7 @@
               ><span>ສັ່ງຊື້</span>
             </router-link>
           </li>
-          <li>
+          <!-- <li>
             <router-link tag="a" to="/type-product"
               ><i id="btn" class="fa-solid fa-cubes-stacked fa-md p-2"></i>
               <span>ປະເພດສິນຄ້າ</span></router-link
@@ -52,7 +52,7 @@
               ><i id="btn" class="fa-solid fa-wheat-awn fa-md p-2"></i>
               <span>ວັດຖຸດິບ</span></router-link
             >
-          </li>
+          </li> -->
         </ul>
         <div class="profile-content">
           <div class="profile">
@@ -71,7 +71,6 @@
 
               <log-out-form />
             </div>
-
           </div>
         </div>
       </div>

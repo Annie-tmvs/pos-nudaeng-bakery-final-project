@@ -11,7 +11,8 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import "font-awesome/css/font-awesome.min.css";
 import './axios'
-// Vue.config.productionTip = false
+
+Vue.config.productionTip = false
 Vue.component('VueFontawesome', require('vue-fontawesome-icon/VueFontawesome.vue').default);
 Vue.component('qr-code', VueQRCodeComponent)
 // Make BootstrapVue available throughout your project
@@ -22,6 +23,7 @@ Vue.prototype.$headers = {
   "Content-Type": "application/json",
   "ngrok-skip-browser-warning": true,
 }
+
 new Vue({
   router,
   store,

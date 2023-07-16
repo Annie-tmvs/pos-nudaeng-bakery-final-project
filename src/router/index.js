@@ -8,43 +8,48 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+    meta: { requiresAuth: true }, 
   },
   {
     path: '/history',
     name: 'history',
-    component: () => import('../views/layouts/HistoryView.vue')
+    component: () => import('../views/layouts/HistoryView.vue'), 
+    meta: { requiresAuth: true }, 
   },
   {
     path: '/order',
     name: 'order',
-    component: () => import('../views/layouts/OrderView.vue')
+    component: () => import('../views/layouts/OrderView.vue'), 
+    meta: { requiresAuth: true }, 
   },
   {
     path: '/type-product',
     name: 'type-product',
-    component: () => import('../views/layouts/ProductTypeView.vue')
+    component: () => import('../views/layouts/ProductTypeView.vue'),
+    meta: { requiresAuth: true }, 
   },
   {
     path: '/product-manage',
     name: 'produt-manage',
     component: () => import('../views/layouts/ProductView.vue')
+    ,  meta: { requiresAuth: true }, 
   },
   {
     path: '/ingredient-manage',
     name: 'ingredient-manage',
-    component: () => import('../views/layouts/IngredientView.vue')
+    component: () => import('../views/layouts/IngredientView.vue'),
+    meta: { requiresAuth: true }, 
   },
 
   {
     path: '/login',
     name: 'login',
     component: () => import('../views/Auth/Login.vue'),
-    meta: {
-      hideNavbar: true,
-     }
+   
   }
 ]
+
 
 const router = new VueRouter({
   mode: 'history',

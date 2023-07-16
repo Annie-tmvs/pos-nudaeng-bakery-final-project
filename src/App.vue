@@ -1,6 +1,6 @@
 <template>
   <div>
-    <sidebar-view v-if="!$route.meta.hideNavbar" />
+    <sidebar-view v-if="showNavBar"/>
     <div id="app">
       <div class="home-content">
         <router-view />
@@ -13,6 +13,12 @@
 import SidebarView from "./components/layout/SidebarView.vue";
 export default {
   components: { SidebarView },
+  computed: {
+    showNavBar() {
+      // check if the current route is not the login route
+      return this.$route.path !== '/login';
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
