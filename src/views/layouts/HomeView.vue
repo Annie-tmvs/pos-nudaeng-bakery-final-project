@@ -19,7 +19,13 @@
 
               <!-- Type product -->
               <div class="card-type-content" v-b-scrollspy>
-                <div class="card card-type"><a href="#">ທັງໝົດ</a></div>
+                <div
+                  class="card card-type"
+                  v-for="(index, i) in productType"
+                  :key="i"
+                >
+                  <a href="#">{{ index.name }}</a>
+                </div>
               </div>
               <!-- Card body -->
               <div class="wrapper">
@@ -38,6 +44,7 @@
               </div>
             </div>
           </b-col>
+
           <!-- Order list -->
           <b-col class="order-content"
             ><div class="order">
@@ -108,20 +115,32 @@
 
 <script>
 // @ is an alias to /src
-
+import axios from "@/axios";
 export default {
   name: "HomeView",
   components: {},
   data() {
     return {
+      productType: [],
       counter: 1,
       cartItems: [],
-      menuItems: [
-        { id: 1, name: "Item 1", price: 10, stock: 5 },
-        { id: 2, name: "Item 2", price: 20, stock: 10 },
-        { id: 3, name: "Item 3", price: 30, stock: 3 },
-      ],
+      // menuItems: [
+      //   { id: 1, name: "Item 1", price: 10, stock: 5 },
+      //   { id: 2, name: "Item 2", price: 20, stock: 10 },
+      //   { id: 3, name: "Item 3", price: 30, stock: 3 },
+      // ],
     };
+  },
+  mounted() {
+    axios
+      .get("api/product_type", {
+        headers: {
+          "ngrok-skip-browser-warning": true,
+        },
+      })
+      .then((res) => {
+        this.productType = res.data;
+      });
   },
   methods: {
     changeCounter: function (num) {

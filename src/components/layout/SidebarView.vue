@@ -68,7 +68,6 @@
                 <h6>User name</h6>
                 <p>Position</p>
               </div>
-
               <log-out-form />
             </div>
           </div>
@@ -82,6 +81,14 @@
 import LogOutForm from "../auth/LogOutForm.vue";
 export default {
   components: { LogOutForm },
+
+  methods: {
+    Logout() {
+      localStorage.clear();
+      window.location.reload();
+      this.$router.push("/");
+    },
+  },
 };
 </script>
 

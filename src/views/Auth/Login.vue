@@ -10,6 +10,7 @@
           </div>
           <div class="card-title">
             <h2>ເຂົ້າສູ່ລະບົບ</h2>
+            <h1>{{ items }}</h1>
           </div>
 
           <div v-if="error">
@@ -74,12 +75,12 @@ export default {
     async logIn() {
       if (this.$refs.form.validate() == true) {
         await axios
-          .post("login", this.login)
+          .post("/api/login", this.login)
           .then((res) => {
             let token = res.data.token;
 
             axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-            localStorage.setItem("token", token);
+            // localStorage.setItem("token", token);
             this.$router.replace("/");
             setTimeout(() => {
               window.location.reload();
@@ -91,11 +92,6 @@ export default {
             alert("ກະລຸນາກວດສອບຂໍ້ມູນຂອງທ່ານອີກຄັ້ງ !");
           });
       }
-
-      // const response = await axios.post('login', this.user);
-
-      // localStorage.setItem('token', response.data.token);
-      // this.$router.push("/");
     },
   },
 };

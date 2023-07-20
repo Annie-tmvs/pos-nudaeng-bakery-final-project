@@ -25,7 +25,7 @@
         <h5>ທ່ານຕອ້ງການອອກຈາກລະບົບແທ້ບໍ່?</h5>
       </div>
       <div class="btn-content">
-        <div class="btn btn-success">ຕົກລົງ</div>
+        <div class="btn btn-success" @click="Logout">ຕົກລົງ</div>
         <div class="btn btn-danger">ຍົກເລີກ</div>
       </div>
     </b-modal>
@@ -33,7 +33,15 @@
 </template>
 
 <script>
-export default {};
+export default {
+  methods: {
+    Logout() {
+      localStorage.clear();
+      // window.location.reload();
+      this.$router.push("/login");
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
