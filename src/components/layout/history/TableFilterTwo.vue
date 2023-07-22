@@ -35,14 +35,14 @@
           </tr>
         </thead>
 
-        <tbody v-for="(item, i) in filteredAndDisplayedItems" :key="i">
+        <tbody v-for="(item, i) in items" :key="i">
           <tr>
-            <td>{{ item.name }}</td>
-            <td>{{ item.type }}</td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.type }}</td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.name }}</td>
+            <td>{{ item.id }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
           </tr>
         </tbody>
       </table>
@@ -74,6 +74,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -81,100 +82,11 @@ export default {
       search: "",
       currentPage: 1,
       itemsPerPage: 6,
-      items: [
-        {
-          name: "item 1",
-          type: "type 1",
-          showDetails: false,
-          acc: "acc 1",
-          visible: true,
-        },
-        {
-          name: "item 2",
-          type: "type 2",
-          showDetails: false,
-          acc: "acc 2",
-          visible: true,
-        },
-        {
-          name: "item 3",
-          type: "type 3",
-          showDetails: false,
-          acc: "acc 3",
-          visible: true,
-        },
-        {
-          name: "item 1",
-          type: "type 1",
-          showDetails: false,
-          acc: "acc 1",
-          visible: true,
-        },
-        {
-          name: "item 2",
-          type: "type 2",
-          showDetails: false,
-          acc: "acc 2",
-          visible: true,
-        },
-        {
-          name: "item 3",
-          type: "type 3",
-          showDetails: false,
-          acc: "acc 3",
-          visible: true,
-        },
-        {
-          name: "item 1",
-          type: "type 1",
-          showDetails: false,
-          acc: "acc 1",
-          visible: true,
-        },
-        {
-          name: "item 2",
-          type: "type 2",
-          showDetails: false,
-          acc: "acc 2",
-          visible: true,
-        },
-        {
-          name: "item 3",
-          type: "type 3",
-          showDetails: false,
-          acc: "acc 3",
-          visible: true,
-        },
-        {
-          name: "item 2",
-          type: "type 2",
-          showDetails: false,
-          acc: "acc 2",
-          visible: true,
-        },
-        {
-          name: "item 3",
-          type: "type 3",
-          showDetails: false,
-          acc: "acc 3",
-          visible: true,
-        },
-        {
-          name: "item 2",
-          type: "type 2",
-          showDetails: false,
-          acc: "acc 2",
-          visible: true,
-        },
-        {
-          name: "item 3",
-          type: "type 3",
-          showDetails: false,
-          acc: "acc 3",
-          visible: true,
-        },
-      ],
+      items: "",
     };
+  },
+  mounted() {
+    axios.get("/posts").then((res) => (this.items = res.data));
   },
   computed: {
     filteredAndDisplayedItems() {
@@ -226,9 +138,14 @@ export default {
 .table-content {
   display: flex;
   width: 100%;
+  height: 360px;
+  overflow: auto;
   padding: 1rem;
   background-color: white;
   border-radius: 5px 5px 0 0;
+  th {
+    position: sticky;
+  }
 }
 .btn-view {
   cursor: pointer;

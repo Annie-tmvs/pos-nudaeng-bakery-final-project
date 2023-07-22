@@ -13,7 +13,7 @@
           </tr>
         </thead>
         <tbody v-for="(item, i) in items" :key="i.id" :item="item">
-          <tr>
+          <tr v-show="item.id == 1">
             <td class="td-cont1"></td>
             <td>
               <div class="text-secondary">
@@ -59,7 +59,9 @@
             <h4>ລາຍລະອຽດ</h4>
             <div class="customer-info">
               <div>
-                <p class="mt-1">User Id: {{ showModalData.id }}</p>
+                <p class="mt-1" :value="showModalData.id">
+                  User Id: {{ showModalData.id }}
+                </p>
                 <p>
                   ຊື່: {{ showModalData.name }}
                   {{ showModalData.username }}
@@ -109,7 +111,7 @@
                 <h><b>ສະຖານທີ່: </b></h>
                 <p class="txt-location">{{ showModalData.address }}</p>
               </div>
-              <div class="map-content">
+              <!-- <div class="map-content">
                 <p><b>ແຜນທີ່: </b></p>
                 <div class="googlemap">
                   <qr-code
@@ -119,9 +121,9 @@
                   >
                   </qr-code>
                 </div>
-              </div>
+              </div> -->
               <div class="button-content">
-                <div class="btn btn-success">ຈັດສົ່ງ</div>
+                <div class="btn btn-success" @click="updateStatus">ຈັດສົ່ງ</div>
                 <div class="btn btn-danger">ຍົກເລີກ</div>
               </div>
             </div>
@@ -133,7 +135,7 @@
 </template>
 
 <script>
-import axios from "@/axios";
+import axios from "axios";
 export default {
   components: {},
   data() {
@@ -144,7 +146,7 @@ export default {
   },
   mounted() {
     axios
-      .get("users", {
+      .get("/users", {
         headers: {
           "ngrok-skip-browser-warning": true,
         },
@@ -163,6 +165,18 @@ export default {
         })
         .then((res) => {
           this.showModalData = res.data;
+        });
+    },
+    updateStatus() {
+      axios
+        .post("users", {
+          id: this.showModalData.id, // replace with the ID of the row you want to update
+        })
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.log(error.response.data);
         });
     },
   },

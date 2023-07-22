@@ -14,13 +14,18 @@
           <div class="card-cont">
             <div class="card card-current">
               <h6>
-                ສິນຄ້າລໍຖ້າດຳເນີນການ: <b class="text-warning">12</b> ສິນຄ້າ
+                ສິນຄ້າລໍຖ້າດຳເນີນການ:
+                <b class="text-warning">
+                  {{ items.filter((item) => item.id === 1).length }}</b
+                >
+                ສິນຄ້າ
               </h6>
             </div>
             <div class="card card-old">
               <h6>
                 ສິນຄ້າທີ່ດຳເນີນການສຳເລັດ:
-                <b>10</b> ສິນຄ້າ
+                <b> {{ items.filter((item) => item.id !== 1).length }}</b>
+                ສິນຄ້າ
               </h6>
             </div>
           </div>
@@ -36,10 +41,19 @@
 </template>
 
 <script>
+import axios from "axios";
 import OrderCard from "@/components/layout/order/OrderCard.vue";
 import OldOrderCard from "@/components/layout/order/OldOrderCard.vue";
 export default {
   components: { OrderCard, OldOrderCard },
+  data() {
+    return {
+      items: "",
+    };
+  },
+  mounted() {
+    axios.get("api/users").then((res) => (this.items = res.data));
+  },
 };
 </script>
 

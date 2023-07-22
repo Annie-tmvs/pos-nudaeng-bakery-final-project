@@ -23,6 +23,7 @@
     </div>
 
     <div class="table-content">
+      <!-- {{ items }} -->
       <table class="table">
         <thead>
           <tr>
@@ -35,40 +36,38 @@
           </tr>
         </thead>
 
-        <tbody v-for="(item, i) in filteredAndDisplayedItems" :key="i">
+        <tbody v-for="(item, i) in items" :key="i">
           <tr class="table-body">
-            <td>{{ item.name }}</td>
-            <td>{{ item.type }}</td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.type }}</td>
-            <td>{{ item.name }}</td>
+            <td>{{ item.userId }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
             <td>
-              <div
-                class="btn-view"
-                @click="item.showDetails = !item.showDetails"
-              >
+              <div class="btn-view" @click="item.id = !item.id">
                 <i
-                  v-if="!item.showDetails"
+                  v-if="!item.id"
                   class="fa-solid fa-eye fa-md"
                   style="color: green"
                 ></i>
                 <i
-                  v-else-if="item.showDetails"
+                  v-else-if="item.id"
                   class="fa-solid fa-eye-slash fa-md"
                   style="color: red"
                 ></i>
-                <span>{{ item.showDetails ? " ປິດ" : "ສະແດງ" }}</span>
+                <span>{{ item.id ? " ປິດ" : "ສະແດງ" }}</span>
               </div>
             </td>
           </tr>
-          <tr v-if="item.showDetails">
+
+          <tr v-if="item.id">
             <td colspan="6" class="accordion-content">
               <div class="accordion-table">
                 <table class="table" height="150px">
                   <thead>
                     <tr collaps="4">
                       {{
-                        item.acc
+                        item.id
                       }}
                     </tr>
                     <tr>
@@ -94,7 +93,14 @@
       </table>
     </div>
     <div class="pagination">
-      <div
+      <!-- <b-pagination
+        class="pagination-btn"
+        :total-rows="totalRows"
+        v-model="currentPage"
+        :per-page="perPage"
+        aria-controls="my-table"
+      /> -->
+      <!-- <div
         tag="button"
         class="btn pagination-btn"
         :disabled="currentPage === 1"
@@ -114,128 +120,55 @@
         @click="currentPage++"
       >
         <i class="fa-solid fa-angles-right"></i>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
+      fab: true,
       opened: [],
       search: "",
       currentPage: 1,
-      itemsPerPage: 5,
-      items: [
-        {
-          name: "item 1",
-          type: "type 1",
-          showDetails: false,
-          acc: "acc 1",
-          visible: true,
-        },
-        {
-          name: "item 2",
-          type: "type 2",
-          showDetails: false,
-          acc: "acc 2",
-          visible: true,
-        },
-        {
-          name: "item 3",
-          type: "type 3",
-          showDetails: false,
-          acc: "acc 3",
-          visible: true,
-        },
-        {
-          name: "item 1",
-          type: "type 1",
-          showDetails: false,
-          acc: "acc 1",
-          visible: true,
-        },
-        {
-          name: "item 2",
-          type: "type 2",
-          showDetails: false,
-          acc: "acc 2",
-          visible: true,
-        },
-        {
-          name: "item 3",
-          type: "type 3",
-          showDetails: false,
-          acc: "acc 3",
-          visible: true,
-        },
-        {
-          name: "item 1",
-          type: "type 1",
-          showDetails: false,
-          acc: "acc 1",
-          visible: true,
-        },
-        {
-          name: "item 2",
-          type: "type 2",
-          showDetails: false,
-          acc: "acc 2",
-          visible: true,
-        },
-        {
-          name: "item 3",
-          type: "type 3",
-          showDetails: false,
-          acc: "acc 3",
-          visible: true,
-        },
-        {
-          name: "item 2",
-          type: "type 2",
-          showDetails: false,
-          acc: "acc 2",
-          visible: true,
-        },
-        {
-          name: "item 3",
-          type: "type 3",
-          showDetails: false,
-          acc: "acc 3",
-          visible: true,
-        },
-        {
-          name: "item 2",
-          type: "type 2",
-          showDetails: false,
-          acc: "acc 2",
-          visible: true,
-        },
-        {
-          name: "item 3",
-          type: "type 3",
-          showDetails: false,
-          acc: "acc 3",
-          visible: true,
-        },
-      ],
+      perPage: 6,
+      paginatedItems: [],
+      items: "",
     };
   },
-  computed: {
-    filteredAndDisplayedItems() {
-      const filteredItems = this.items.filter((item) => {
-        return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+  mounted() {
+    axios
+      .get("/posts", {
+        headers: {
+          "ngrok-skip-browser-warning": true,
+        },
+      })
+      .then((res) => {
+        this.items = res.data.reverse();
+        this.paginatedItems = this.items.slice(
+          (this.currentPage - 1) * this.perPage,
+          this.currentPage * this.perPage
+        );
       });
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      const displayedItems = filteredItems.slice(start, end);
-      return displayedItems;
-    },
-    totalPages() {
-      return Math.ceil(this.items.length / this.itemsPerPage);
-    },
   },
+
+  // computed: {
+  //   filteredAndDisplayedItems() {
+  //     const filteredItems = this.items.filter((item) => {
+  //       return item.title.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+  //     });
+  //     const start = (this.currentPage - 1) * this.itemsPerPage;
+  //     const end = start + this.itemsPerPage;
+  //     const displayedItems = filteredItems.slice(start, end);
+  //     return displayedItems;
+  //   },
+  //   totalPages() {
+  //     return Math.ceil(this.items.length / this.itemsPerPage);
+  //   },
+  // },
 };
 </script>
 
@@ -272,9 +205,14 @@ export default {
 .table-content {
   display: flex;
   width: 100%;
+  height: 380px;
+  overflow: auto;
   padding: 1rem;
   background-color: white;
   border-radius: 5px 5px 0 0;
+  th {
+    position: sticky;
+  }
 }
 .btn-view {
   cursor: pointer;

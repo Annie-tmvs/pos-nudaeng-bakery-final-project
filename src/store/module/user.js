@@ -36,7 +36,7 @@ const actions = {
     async getData({commit}){
         
         commit('userLoading',true)
-        await axios.get("user", this.$headers).then((res)=>{
+        await axios.get("/users", this.$headers).then((res)=>{
             commit('sendToUser',res.data)
             commit('userLoading',false)
             

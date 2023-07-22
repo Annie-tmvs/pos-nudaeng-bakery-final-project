@@ -13,7 +13,7 @@
           </tr>
         </thead>
         <tbody v-for="(item, i) in info" :key="i.id">
-          <tr>
+          <tr v-show="item.id !== 1">
             <td class="td-cont1"></td>
             <td>
               <div class="text-secondary">
@@ -28,7 +28,8 @@
               ><span>ດຳເນີນການສຳເລັດ</span>
             </td>
             <td class="btn-content">
-              <div class="btn"
+              <div
+                class="btn"
                 tag="text"
                 v-b-modal.modal-scrollable
                 @click="viewModal(item.id)"
@@ -108,7 +109,7 @@
                 <h><b>ສະຖານທີ່: </b></h>
                 <p class="txt-location">{{ showModalInfo.address }}</p>
               </div>
-              <div class="map-content">
+              <!-- <div class="map-content">
                 <p><b>ແຜນທີ່: </b></p>
                 <div class="googlemap">
                   <qr-code
@@ -118,7 +119,7 @@
                   >
                   </qr-code>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -128,7 +129,7 @@
 </template>
 
 <script>
-import axios from "@/axios";
+import axios from "axios";
 export default {
   components: {},
   data() {

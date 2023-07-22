@@ -8,26 +8,7 @@
     </div>
     <hr class="my-3" />
     <div class="table-content">
-      <div>
-        <b-tabs pills align="start">
-          <b-tab title="ສະແດງແບບ Bill" active
-            ><b-card-text
-              ><div>
-                <!-- table bill -->
-                <table-filter />
-                </div>
-                </b-card-text>
-          </b-tab>
-          <b-tab title="ສະແດງແບບ List"
-            ><b-card-text
-              ><div>
-                <!-- table list -->
-                <table-filter-two />
-                </div>
-                </b-card-text>
-                </b-tab>
-        </b-tabs>
-      </div>
+      <history-table />
     </div>
   </div>
 </template>
@@ -35,13 +16,9 @@
 <script>
 import TableFilter from "@/components/layout/history/TableFilter.vue";
 import TableFilterTwo from "@/components/layout/history/TableFilterTwo.vue";
+import HistoryTable from "@/components/layout/history/historyTable.vue";
 export default {
-  components: { TableFilter, TableFilterTwo },
-  data() {
-    return {
-      //
-    };
-  },
+  components: { TableFilter, TableFilterTwo, HistoryTable },
 };
 </script>
 

@@ -12,32 +12,56 @@
                 </div>
                 <!-- search -->
                 <div>
-                  <input type="text" class="search-bar" placeholder="ຄົ້ນຫາ" />
+                  <!-- <input
+                    type="text"
+                    v-model="search"
+                    class="search-bar"
+                    placeholder="ຄົ້ນຫາ"
+                  /> -->
                 </div>
               </div>
               <hr class="my-3" />
 
               <!-- Type product -->
               <div class="card-type-content" v-b-scrollspy>
+                <div class="card card-type">
+                  <a>ທັງໝົດ</a>
+                </div>
                 <div
                   class="card card-type"
                   v-for="(index, i) in productType"
                   :key="i"
                 >
-                  <a href="#">{{ index.name }}</a>
+                  <a>{{ index.name }}</a>
                 </div>
               </div>
+
               <!-- Card body -->
               <div class="wrapper">
                 <div
                   class="card card-menu"
-                  v-for="item in menuItems"
-                  :key="item.id"
+                  v-for="(item, i) in menuItems"
+                  :key="i.id"
                 >
                   <div>
                     <!-- <img v-bind:src="post.img" alt="image" /> -->
                     <div class="img">image</div>
-                    <p>title</p>
+                    <div class="card-text">
+                      <label
+                        ><b style="color: black"> {{ item.name }}</b></label
+                      >
+                      <label
+                        >stock:<b style="color: rgb(242, 210, 51)">
+                          {{ item.quantity }}</b
+                        ></label
+                      >
+                      <label
+                        >ລາຄາ:
+                        <span style="color: black"
+                          >{{ item.price }}/ {{ item.unit }}</span
+                        ></label
+                      >
+                    </div>
                     <button @click="addToCart(item)">Add to Cart</button>
                   </div>
                 </div>
@@ -54,8 +78,8 @@
               <div class="order-list">
                 <div
                   class="card card-order"
-                  v-for="item in cartItems"
-                  :key="item.id"
+                  v-for="(item, i) in cartItems"
+                  :key="i"
                 >
                   <div class="img">
                     <img alt="image" />
@@ -63,12 +87,28 @@
                   <div class="card-main">
                     <div class="top-cont">
                       <div>
-                        <h
-                          >{{ item.name }} {{ item.quantity }}
-                          {{ item.totalPrice }}</h
-                        >
-                        <p>tpye</p>
+                        <h>{{ item.name }}</h>
+                        <p>{{ item.totalPrice }} kip</p>
+                        <div class="quantity-content">
+                          <!-- <button v-on:click="decrementQuantity(item)">
+                            -
+                          </button> -->
+                          <div class="quantity">
+                            <input
+                              placeholder="ຈຳນວນ"
+                              :value="
+                                isMaxStockReached(item)
+                                  ? 'Maximum stock reached'
+                                  : item.quantity
+                              "
+                            />
+                          </div>
+                          <!-- <button v-on:click="incrementQuantity(item)">
+                            +
+                          </button> -->
+                        </div>
                       </div>
+
                       <div>
                         <button @click="removeFromCart(item)">
                           <i class="fa-solid fa-trash fa-sm"></i>
@@ -89,7 +129,7 @@
                       <h>ຈຳນວນ :</h>
                     </div>
                     <div>
-                      <p>quantity</p>
+                      <p>{{ cartTotalQuantity }}</p>
                     </div>
                   </div>
                   <div class="row">
@@ -97,7 +137,7 @@
                       <h>ລາຄາລວມ :</h>
                     </div>
                     <div>
-                      <p>$price total Kip</p>
+                      <p>{{ cartTotalPrice }} Kip</p>
                     </div>
                   </div>
                 </div>
@@ -115,96 +155,132 @@
 
 <script>
 // @ is an alias to /src
-import axios from "@/axios";
+import axios from "axios";
 export default {
   name: "HomeView",
   components: {},
   data() {
     return {
+      search: "",
+      filteredProducts: "",
       productType: [],
+      product: [],
       counter: 1,
       cartItems: [],
-      // menuItems: [
-      //   { id: 1, name: "Item 1", price: 10, stock: 5 },
-      //   { id: 2, name: "Item 2", price: 20, stock: 10 },
-      //   { id: 3, name: "Item 3", price: 30, stock: 3 },
-      // ],
+      menuItems: [],
     };
   },
   mounted() {
     axios
-      .get("api/product_type", {
-        headers: {
-          "ngrok-skip-browser-warning": true,
-        },
-      })
-      .then((res) => {
-        this.productType = res.data;
-      });
-  },
-  methods: {
-    changeCounter: function (num) {
-      this.counter += +num;
-      console.log(this.counter);
-      !isNaN(this.counter) && this.counter > 1
-        ? this.counter
-        : (this.counter = 1);
-    },
-    addToCart(item) {
-      const existingItem = this.cartItems.find((i) => i.id === item.id);
+      .get("api/product_type")
+      .then((response) => (this.productType = response.data));
+    axios
+      .get("api/product")
+      .then((response) => (this.menuItems = response.data));
 
-      if (existingItem) {
-        if (existingItem.quantity < item.stock) {
-          existingItem.quantity += 1;
-        } else {
-          console.log(`Maximum stock reached for ${item.name}`);
-        }
-      } else {
-        this.cartItems.push({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: 1,
-          totalPrice: item.price, // add totalPrice property
-        });
-      }
-
-      // update totalPrice for all cart items
-      this.cartItems.forEach((i) => (i.totalPrice = i.price * i.quantity));
-    },
-    removeFromCart(item) {
-      const existingItem = this.cartItems.find((i) => i.id === item.id);
-      if (existingItem.quantity > 1) {
-        existingItem.quantity -= 1;
-      } else {
-        const index = this.cartItems.indexOf(existingItem);
-        this.cartItems.splice(index, 1);
-      }
-    },
-    incrementQuantity(item) {
-      if (item.quantity < item.stock) {
-        item.quantity += 1;
-      } else {
-        console.log(`Maximum stock reached for ${item.name}`);
-      }
-    },
-    decrementQuantity(item) {
-      if (item.quantity > 1) {
-        item.quantity -= 1;
-      } else {
-        this.removeFromCart(item);
-      }
-    },
-    isMaxStockReached(item) {
-      const existingItem = this.cartItems.find((i) => i.id === item.id);
-      if (existingItem) {
-        return existingItem.quantity >= item.stock;
-      } else {
-        return false;
-      }
-    },
+    this.filterProducts();
   },
-  computed: {},
+
+  // methods: {
+  //   filterProducts(product_type_name = null) {
+  //     let endpoint = "api/product";
+  //     if (product_type_name) {
+  //       endpoint += `?product_type_name=${product_type_name}`;
+  //     }
+  //     axios
+  //       .get(endpoint)
+  //       .then((response) => {
+  //         this.menuItems = response.data;
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //       });
+  //   },
+  //   changeCounter: function (num) {
+  //     this.counter += +num;
+  //     console.log(this.counter);
+  //     !isNaN(this.counter) && this.counter > 1
+  //       ? this.counter
+  //       : (this.counter = 1);
+  //   },
+  //   addToCart(item) {
+  //     const existingItem = this.cartItems.find((i) => i.id === item.id);
+
+  //     if (existingItem) {
+  //       if (existingItem.quantity < item.quantity) {
+  //         existingItem.quantity += 1;
+  //       } else {
+  //         console.log(`Maximum stock reached for ${item.name}`);
+  //       }
+  //     } else {
+  //       this.cartItems.push({
+  //         id: item.id,
+  //         name: item.name,
+  //         price: item.price,
+  //         quantity: 1,
+  //         totalPrice: item.price, // add totalPrice property
+  //       });
+  //     }
+
+  //     // update totalPrice for all cart items
+  //     this.cartItems.forEach((i) => (i.totalPrice = i.price * i.quantity));
+  //   },
+  //   removeFromCart(item) {
+  //     const existingItem = this.cartItems.find((i) => i.id === item.id);
+  //     if (existingItem.quantity > 1) {
+  //       existingItem.quantity -= 1;
+  //     } else {
+  //       const index = this.cartItems.indexOf(existingItem);
+  //       this.cartItems.splice(index, 1);
+  //     }
+  //   },
+  //   incrementQuantity(item) {
+  //     if (typeof item.stock === "number" && typeof item.quantity === "number") {
+  //       // Check if stock and quantity are numbers
+  //       if (item.quantity < item.stock) {
+  //         // Check if quantity is less than stock
+  //         item.quantity += 1;
+  //         console.log(
+  //           `Quantity of ${item.name} incremented to ${item.quantity}`
+  //         );
+  //       } else {
+  //         console.log(`Maximum stock reached for ${item.name}`);
+  //       }
+  //     } else {
+  //       console.log(`Invalid stock or quantity for ${item.name}`);
+  //     }
+  //   },
+
+  //   decrementQuantity(item) {
+  //     if (item.quantity > 1) {
+  //       item.quantity -= 1;
+  //     } else {
+  //       this.removeFromCart(item);
+  //     }
+  //   },
+  //   isMaxStockReached(item) {
+  //     const existingItem = this.cartItems.find((i) => i.id === item.id);
+  //     if (existingItem) {
+  //       return existingItem.quantity >= item.stock;
+  //     } else {
+  //       return false;
+  //     }
+  //   },
+  // },
+  // computed: {
+  //   filteredAndDisplayedItems() {
+  //     const filteredItems = this.menuItems.filter((item) => {
+  //       return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+  //     });
+  //     const start = (this.currentPage - 1) * this.itemsPerPage;
+  //     const end = start + this.itemsPerPage;
+  //     const displayedItems = filteredItems.slice(start, end);
+  //     return displayedItems;
+  //   },
+  //   totalPages() {
+  //     return Math.ceil(this.items.length / this.itemsPerPage);
+  //   },
+  // },
 };
 </script>
 <style lang="scss" scoped>
@@ -246,7 +322,7 @@ export default {
 .card-type-content {
   display: flex;
   gap: 5px;
-
+  flex-wrap: wrap;
   // width: fill;
   // overflow: auto;
   // position: relative;
@@ -254,7 +330,6 @@ export default {
     width: 100px;
     height: 45px;
     align-items: center;
-    display: flex;
     flex-direction: column;
     justify-items: center;
     border-radius: 10px;
@@ -281,6 +356,10 @@ export default {
         color: black;
       }
     }
+    a:active {
+      background: $yellow;
+      color: black;
+    }
   }
 }
 
@@ -293,11 +372,11 @@ export default {
   gap: 1rem;
   margin-top: 1.5rem;
   overflow: auto;
-  height: 500px;
+  height: 440px;
   .card-menu {
     display: flex;
     max-width: 175px;
-    height: 220px;
+    height: 260px;
     div {
       padding: 12px;
       color: #1471cf;
@@ -314,9 +393,6 @@ export default {
         object-fit: cover;
         background-color: $gray;
         border-radius: 5px;
-      }
-      p {
-        padding-top: 1rem;
       }
       button {
         color: chocolate;
@@ -346,7 +422,7 @@ export default {
         flex-direction: row;
         gap: 1rem;
         padding: 7px 15px 7px 7px;
-        height: 90px;
+        height: 100px;
         width: 200;
         text-align: start;
         margin-bottom: 1rem;
@@ -370,7 +446,7 @@ export default {
         .top-cont {
           display: flex;
           width: fill;
-          background-color: #1471cf;
+          // background-color: #1471cf;
           justify-content: space-between;
           p {
             font-size: small;
@@ -439,5 +515,19 @@ input:focus {
     align-items: center;
     justify-content: center;
   }
+}
+.quantity-content {
+  display: flex;
+  width: 200;
+  flex-direction: row;
+  background-color: #ececec;
+}
+.quantity {
+  height: 25px;
+  width: 100px;
+  padding-left: 10px;
+  text-align: center;
+  background-color: #ececec;
+  border-radius: 10px;
 }
 </style>

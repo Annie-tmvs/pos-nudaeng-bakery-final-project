@@ -24,17 +24,24 @@
             >
           </li>
           <li>
+            <router-link tag="a" to="/order">
+              <i id="btn" class="fa-solid fa-bell fa-md p-2"></i
+              ><span>ສັ່ງຊື້</span>
+              <div class="report d-flex">
+                <div>
+                  2
+                  <!-- {{ items.filter((item) => item.id === 1).length }} -->
+                </div>
+              </div>
+            </router-link>
+          </li>
+          <li>
             <router-link to="/history">
               <i id="btn" class="fa-solid fa-clipboard-list fa-md p-2"></i
               ><span>ປະວັດການຂາຍ</span></router-link
             >
           </li>
-          <li>
-            <router-link tag="a" to="/order">
-              <i id="btn" class="fa-solid fa-bell fa-md p-2"></i
-              ><span>ສັ່ງຊື້</span>
-            </router-link>
-          </li>
+
           <!-- <li>
             <router-link tag="a" to="/type-product"
               ><i id="btn" class="fa-solid fa-cubes-stacked fa-md p-2"></i>
@@ -52,7 +59,7 @@
               ><i id="btn" class="fa-solid fa-wheat-awn fa-md p-2"></i>
               <span>ວັດຖຸດິບ</span></router-link
             >
-          </li> -->
+          </li>  -->
         </ul>
         <div class="profile-content">
           <div class="profile">
@@ -64,8 +71,8 @@
               />
             </div>
             <div class="detail-content">
-              <div class="profile-detail">
-                <h6>User name</h6>
+              <div class="profile-detail" v-for="u in user" :key="u">
+                <h6>{{ u.id }}</h6>
                 <p>Position</p>
               </div>
               <log-out-form />
@@ -78,9 +85,20 @@
 </template>
 
 <script>
+import axios from "axios";
 import LogOutForm from "../auth/LogOutForm.vue";
 export default {
   components: { LogOutForm },
+
+  data() {
+    return {
+      items: "",
+      user: "",
+    };
+  },
+  mounted() {
+    // axios.get("/users").then((res) => (this.user = res.data));
+  },
 
   methods: {
     Logout() {
@@ -99,6 +117,17 @@ export default {
   margin: 0;
   text-decoration: none;
   list-style: none;
+}
+.report {
+  display: flex;
+  padding: 5px;
+  margin-left: 2rem;
+  justify-content: end;
+  color: red;
+  // background-color: red;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 500;
 }
 nav {
   position: relative;

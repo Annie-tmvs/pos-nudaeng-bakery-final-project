@@ -75,7 +75,7 @@ export default {
     async logIn() {
       if (this.$refs.form.validate() == true) {
         await axios
-          .post("/api/login", this.login)
+          .post("api/login", this.login)
           .then((res) => {
             let token = res.data.token;
 
