@@ -29,8 +29,7 @@
               ><span>ສັ່ງຊື້</span>
               <div class="report d-flex">
                 <div>
-                  2
-                  <!-- {{ items.filter((item) => item.id === 1).length }} -->
+                  <!-- {{ items.filter((item) => item.id === null).length }} -->
                 </div>
               </div>
             </router-link>
@@ -71,9 +70,11 @@
               />
             </div>
             <div class="detail-content">
-              <div class="profile-detail" v-for="u in user" :key="u">
-                <h6>{{ u.id }}</h6>
-                <p>Position</p>
+              <div class="profile-detail">
+                <!-- <h6 class="text-start">
+                  {{ user.firstname }} {{ user.lastname }}
+                </h6>
+                <p>{{ user.roles }}</p> -->
               </div>
               <log-out-form />
             </div>
@@ -94,12 +95,47 @@ export default {
     return {
       items: "",
       user: "",
+      order: "",
     };
   },
   mounted() {
-    // axios.get("/users").then((res) => (this.user = res.data));
-  },
+    // axios
+    //   .get("api/users/")
+    //   .then((response) => {
+    //     this.user = response.data;
+    //     console.log(response);
+    //   })
+    //   .catch((e) => {
+    //     console.log(e);
+    //   });
+    const token = localStorage.getItem("token");
 
+    axios
+      .get("api/users/selOne/1", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        this.user = response.data;
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+
+    axios
+      .get("api/order", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        this.items = response.data;
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  },
   methods: {
     Logout() {
       localStorage.clear();
@@ -221,7 +257,6 @@ nav {
       margin-left: 10px;
       font-weight: 600;
       color: white;
-
       p {
         font-weight: normal;
         font-size: 10px;

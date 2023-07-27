@@ -16,7 +16,7 @@
               <h6>
                 ສິນຄ້າລໍຖ້າດຳເນີນການ:
                 <b class="text-warning">
-                  {{ items.filter((item) => item.id === 1).length }}</b
+                  {{ items.filter((item) => item.status === null).length }}</b
                 >
                 ສິນຄ້າ
               </h6>
@@ -24,7 +24,9 @@
             <div class="card card-old">
               <h6>
                 ສິນຄ້າທີ່ດຳເນີນການສຳເລັດ:
-                <b> {{ items.filter((item) => item.id !== 1).length }}</b>
+                <b>
+                  {{ items.filter((item) => item.status !== null).length }}</b
+                >
                 ສິນຄ້າ
               </h6>
             </div>
@@ -52,7 +54,14 @@ export default {
     };
   },
   mounted() {
-    axios.get("api/users").then((res) => (this.items = res.data));
+    const token = localStorage.getItem("token");
+    axios
+      .get("api/order", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((res) => (this.items = res.data));
   },
 };
 </script>

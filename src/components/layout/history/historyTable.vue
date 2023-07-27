@@ -23,10 +23,13 @@
         :items="items"
         :search="search"
       >
+        <template v-slot:item.created_at="{ item }">
+          {{ moment(item.created_at).format("L") }}
+        </template>
         <template v-slot:item.action="{ item }">
           <b-button
             variant="outline-primary"
-            @click="viewInfo(item.id)"
+            @click="viewInfo(view.id)"
             v-b-modal.modal-scrollable
             >View</b-button
           >
@@ -39,6 +42,7 @@
       id="modal-scrollable"
       hide-header
       hide-footer
+      size="lg"
       scrollable
       title="Scrollable Content"
       v-if="view"
@@ -67,6 +71,7 @@
 
 <script>
 import axios from "axios";
+import moment from "moment";
 export default {
   data() {
     return {
@@ -80,18 +85,23 @@ export default {
           sortable: false,
           value: "id",
         },
-        { text: "ເວລາ", value: "firstname" },
-        { text: "ພະນັກງານ", value: "lastname" },
-        { text: "ສິນຄ້າ", value: "prod_name" },
-        { text: "ຈຳນວນ", value: "quantity" },
-        { text: "ລາຄາ", value: "price" },
+        { text: "ເວລາ", value: "created_at" },
+        { text: "ພະນັກງານ", value: "user_id" },
+        { text: "ຈຳນວນສິນຄ້າ", value: "quantity_total" },
+        { text: "ລາຄາລວມ", value: "price_total" },
+        { text: "ຊຳລະ", value: "receipt_image" },
         { text: "action", value: "action" },
       ],
     };
   },
   mounted() {
+    const token = localStorage.getItem("token");
     axios
-      .get("api/users")
+      .get("api/order", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
       .then((response) => {
         this.items = response.data;
         console.log(response);
@@ -101,9 +111,18 @@ export default {
       });
   },
   methods: {
+    moment: function () {
+      return moment();
+    },
     async viewInfo(id) {
       if (id !== null) {
-        const view = await axios.get("api/users/" + id);
+        const token = localStorage.getItem("token");
+
+        const view = await axios.get("api/order", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
         this.view = view.data;
         console.log(view);
       }

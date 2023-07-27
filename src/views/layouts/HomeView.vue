@@ -32,7 +32,7 @@
                   v-for="(index, i) in productType"
                   :key="i"
                 >
-                  <a>{{ index.name }}</a>
+                  <a @click="pdType(index.id)">{{ index.name }}</a>
                 </div>
               </div>
 
@@ -44,8 +44,13 @@
                   :key="i.id"
                 >
                   <div>
-                    <!-- <img v-bind:src="post.img" alt="image" /> -->
-                    <div class="img">image</div>
+                    <div class="img">
+                      <img
+                        class="img-body"
+                        :src="'http://localhost:8000/storage/' + item.img"
+                        alt="image"
+                      />
+                    </div>
                     <div class="card-text">
                       <label
                         ><b style="color: black"> {{ item.name }}</b></label
@@ -171,116 +176,35 @@ export default {
     };
   },
   mounted() {
+    const token = localStorage.getItem("token");
+
     axios
-      .get("api/product_type")
-      .then((response) => (this.productType = response.data));
+      .get("api/product_type", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        this.productType = response.data;
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+
     axios
       .get("api/product")
-      .then((response) => (this.menuItems = response.data));
+      .then((response) => (this.menuItems = response.data))
+      .catch((error) => {
+        console.error("Error:", error);
+      });
 
     this.filterProducts();
   },
-
-  // methods: {
-  //   filterProducts(product_type_name = null) {
-  //     let endpoint = "api/product";
-  //     if (product_type_name) {
-  //       endpoint += `?product_type_name=${product_type_name}`;
-  //     }
-  //     axios
-  //       .get(endpoint)
-  //       .then((response) => {
-  //         this.menuItems = response.data;
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       });
-  //   },
-  //   changeCounter: function (num) {
-  //     this.counter += +num;
-  //     console.log(this.counter);
-  //     !isNaN(this.counter) && this.counter > 1
-  //       ? this.counter
-  //       : (this.counter = 1);
-  //   },
-  //   addToCart(item) {
-  //     const existingItem = this.cartItems.find((i) => i.id === item.id);
-
-  //     if (existingItem) {
-  //       if (existingItem.quantity < item.quantity) {
-  //         existingItem.quantity += 1;
-  //       } else {
-  //         console.log(`Maximum stock reached for ${item.name}`);
-  //       }
-  //     } else {
-  //       this.cartItems.push({
-  //         id: item.id,
-  //         name: item.name,
-  //         price: item.price,
-  //         quantity: 1,
-  //         totalPrice: item.price, // add totalPrice property
-  //       });
-  //     }
-
-  //     // update totalPrice for all cart items
-  //     this.cartItems.forEach((i) => (i.totalPrice = i.price * i.quantity));
-  //   },
-  //   removeFromCart(item) {
-  //     const existingItem = this.cartItems.find((i) => i.id === item.id);
-  //     if (existingItem.quantity > 1) {
-  //       existingItem.quantity -= 1;
-  //     } else {
-  //       const index = this.cartItems.indexOf(existingItem);
-  //       this.cartItems.splice(index, 1);
-  //     }
-  //   },
-  //   incrementQuantity(item) {
-  //     if (typeof item.stock === "number" && typeof item.quantity === "number") {
-  //       // Check if stock and quantity are numbers
-  //       if (item.quantity < item.stock) {
-  //         // Check if quantity is less than stock
-  //         item.quantity += 1;
-  //         console.log(
-  //           `Quantity of ${item.name} incremented to ${item.quantity}`
-  //         );
-  //       } else {
-  //         console.log(`Maximum stock reached for ${item.name}`);
-  //       }
-  //     } else {
-  //       console.log(`Invalid stock or quantity for ${item.name}`);
-  //     }
-  //   },
-
-  //   decrementQuantity(item) {
-  //     if (item.quantity > 1) {
-  //       item.quantity -= 1;
-  //     } else {
-  //       this.removeFromCart(item);
-  //     }
-  //   },
-  //   isMaxStockReached(item) {
-  //     const existingItem = this.cartItems.find((i) => i.id === item.id);
-  //     if (existingItem) {
-  //       return existingItem.quantity >= item.stock;
-  //     } else {
-  //       return false;
-  //     }
-  //   },
-  // },
-  // computed: {
-  //   filteredAndDisplayedItems() {
-  //     const filteredItems = this.menuItems.filter((item) => {
-  //       return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
-  //     });
-  //     const start = (this.currentPage - 1) * this.itemsPerPage;
-  //     const end = start + this.itemsPerPage;
-  //     const displayedItems = filteredItems.slice(start, end);
-  //     return displayedItems;
-  //   },
-  //   totalPages() {
-  //     return Math.ceil(this.items.length / this.itemsPerPage);
-  //   },
-  // },
+  methods: {
+    pdType(id) {
+      console.log(id);
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -385,14 +309,19 @@ export default {
       flex-direction: column;
       align-items: center;
       .img {
+        width: 155px;
+        height: 120px;
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 155px;
-        height: 120px;
-        object-fit: cover;
         background-color: $gray;
         border-radius: 5px;
+        .img-body {
+          width: 155px;
+          height: 120px;
+          object-fit: cover;
+          border-radius: 5px;
+        }
       }
       button {
         color: chocolate;

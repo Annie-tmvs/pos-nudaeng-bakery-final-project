@@ -1,6 +1,6 @@
 <template>
   <div>
-    <sidebar-view v-if="showNavBar"/>
+    <sidebar-view v-if="showNavBar" />
     <div id="app">
       <div class="home-content">
         <router-view />
@@ -16,7 +16,7 @@ export default {
   computed: {
     showNavBar() {
       // check if the current route is not the login route
-      return this.$route.path !== '/login';
+      return this.$route.path !== "/login";
     },
   },
 };

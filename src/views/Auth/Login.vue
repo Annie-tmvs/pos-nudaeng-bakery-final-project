@@ -63,24 +63,39 @@ export default {
       password: "Password",
       valid: false,
       error: null,
-      login: {
-        phone_number: "",
-        password: "",
-      },
+      login: { phone_number: "", password: "" },
     };
   },
 
   methods: {
     //login
+    // login() {
+    //   axios
+    //     .post("/api/login", {
+    //       phone_number: this.phone_number,
+    //       password: this.password,
+    //     })
+    //     .then((response) => {
+    //       const token = response.data.token;
+    //       localStorage.setItem("token", token);
+    //       // Redirect to dashboard or other page
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error:", error);
+    //       this.errors.push(error.response.data.message);
+    //     });
+    // },
+
     async logIn() {
       if (this.$refs.form.validate() == true) {
         await axios
           .post("api/login", this.login)
           .then((res) => {
             let token = res.data.token;
+            localStorage.setItem("id", res.data.user.id);
 
             axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-            // localStorage.setItem("token", token);
+            localStorage.setItem("token", token);
             this.$router.replace("/");
             setTimeout(() => {
               window.location.reload();
@@ -91,6 +106,8 @@ export default {
             console.log(error);
             alert("ກະລຸນາກວດສອບຂໍ້ມູນຂອງທ່ານອີກຄັ້ງ !");
           });
+      } else {
+        alert("ກະລຸນາກວດສອບສິດຂອງທ່ານອີກຄັ້ງ !");
       }
     },
   },

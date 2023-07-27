@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="setting-icon" id="tooltip-target-1">
-      <div class="btn" v-b-modal="'modal'">
+      <div class="btn" v-b-modal="'modal'" @click="showModal">
         <i class="fa-solid fa-arrow-right-from-bracket fa-md"> </i>
       </div>
       <!-- popup text  -->
@@ -12,7 +12,7 @@
     <!-- Modal -->
 
     <b-modal
-      id="modal"
+      id="modal-1"
       centered
       hide-backdrop
       hide-header
@@ -26,7 +26,7 @@
       </div>
       <div class="btn-content">
         <div class="btn btn-success" @click="Logout">ຕົກລົງ</div>
-        <div class="btn btn-danger">ຍົກເລີກ</div>
+        <div class="btn btn-danger" @click="hideModal">ຍົກເລີກ</div>
       </div>
     </b-modal>
   </div>
@@ -34,11 +34,22 @@
 
 <script>
 export default {
+  data() {
+    return {
+      Refresh: "",
+    };
+  },
   methods: {
     Logout() {
       localStorage.clear();
       // window.location.reload();
-      this.$router.push("/login");
+      this.$router.push("/");
+    },
+    showModal() {
+      this.$root.$emit("bv::show::modal", "modal-1", "#btnShow");
+    },
+    hideModal() {
+      this.$root.$emit("bv::hide::modal", "modal-1", "#btnShow");
     },
   },
 };

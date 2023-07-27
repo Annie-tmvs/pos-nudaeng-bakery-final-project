@@ -5,6 +5,7 @@
         <thead>
           <tr>
             <th class="th-cont1" style="border-radius: 10px 0 0 10px"></th>
+            <th>ເລກບິນ</th>
             <th>ລູກຄ້າ</th>
             <th class="th-cont1">ວັນທີ</th>
             <th class="th-cont1">ເວລາ</th>
@@ -13,16 +14,23 @@
           </tr>
         </thead>
         <tbody v-for="(item, i) in items" :key="i.id" :item="item">
-          <tr v-show="item.id == 1">
+          <tr v-show="item.status === 1">
             <td class="td-cont1"></td>
             <td>
+              {{ item.id }}
+            </td>
+            <td>
               <div class="text-secondary">
-                <small>user id: {{ item.id }}</small>
+                <small>{{ item.user_id }}</small>
               </div>
               <div>{{ item.name }}</div>
             </td>
-            <td class="td-cont1">3-7-2023</td>
-            <td class="td-cont1">11:35</td>
+            <td class="td-cont1">
+              {{ moment(item.created_at).format("DD/MM/YYYY") }}
+            </td>
+            <td class="td-cont1">
+              {{ moment(item.created_at).format("hh:ss a") }}
+            </td>
             <td>
               <i class="fa-solid fa-spinner fa-md p-2 text-warning"></i
               ><span>ກຳລັງລໍຖ້າດຳເນີນການ</span>
@@ -135,6 +143,7 @@
 </template>
 
 <script>
+import moment from "moment";
 import axios from "axios";
 export default {
   components: {},
@@ -145,10 +154,11 @@ export default {
     };
   },
   mounted() {
+    const token = localStorage.getItem("token");
     axios
-      .get("/users", {
+      .get("api/order", {
         headers: {
-          "ngrok-skip-browser-warning": true,
+          Authorization: "Bearer " + token,
         },
       })
       .then((res) => {
@@ -157,10 +167,11 @@ export default {
   },
   methods: {
     showModal(itemId) {
+      const token = localStorage.getItem("token");
       axios
-        .get(`users/${itemId}`, {
+        .get(`api/order/${itemId}`, {
           headers: {
-            "ngrok-skip-browser-warning": true,
+            Authorization: "Bearer " + token,
           },
         })
         .then((res) => {
@@ -169,7 +180,7 @@ export default {
     },
     updateStatus() {
       axios
-        .post("users", {
+        .post("api/order", {
           id: this.showModalData.id, // replace with the ID of the row you want to update
         })
         .then((response) => {
@@ -178,6 +189,11 @@ export default {
         .catch((error) => {
           console.log(error.response.data);
         });
+    },
+  },
+  methods: {
+    moment: function () {
+      return moment();
     },
   },
 };
@@ -210,7 +226,7 @@ body {
 .table {
   th {
     padding-bottom: 1rem;
-    width: 100% * 0.2;
+    width: 100% * 0.16;
     position: sticky;
     top: 0;
     margin: 1rem 0;
@@ -226,7 +242,7 @@ body {
     width: fit-content;
   }
   td {
-    width: 100% * 0.2;
+    width: 100% * 0.16;
     height: 70px;
   }
   .td-cont1 {
