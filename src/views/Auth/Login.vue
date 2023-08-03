@@ -10,14 +10,13 @@
           </div>
           <div class="card-title">
             <h2>ເຂົ້າສູ່ລະບົບ</h2>
-            <h1>{{ items }}</h1>
           </div>
-
+          <h5 class="text-center">POS Nudaeng Bakery</h5>
           <div v-if="error">
             {{ error }}
           </div>
 
-          <v-form ref="form" v-model="valid" lazy-validation class="pa-10">
+          <v-form ref="form" v-model="valid" lazy-validation class="mt-5">
             <v-row align="center" justify="center">
               <v-col cols="12" sm="8">
                 <v-text-field

@@ -43,7 +43,7 @@ export default {
     Logout() {
       localStorage.clear();
       // window.location.reload();
-      this.$router.push("/");
+      this.$router.push("/login");
     },
     showModal() {
       this.$root.$emit("bv::show::modal", "modal-1", "#btnShow");

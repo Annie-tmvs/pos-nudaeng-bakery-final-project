@@ -13,7 +13,7 @@
         </div>
         <div class="card">
           <h6>
-            ຍອດຂາຍມື້ນີ້: <b class="text-info"> {{ items.length }}</b> ສິນຄ້າ
+            ຍອດຂາຍ: <b class="text-info"> {{ items.length }}</b> ສິນຄ້າ
           </h6>
         </div>
       </v-card-title>
@@ -29,7 +29,7 @@
         <template v-slot:item.action="{ item }">
           <b-button
             variant="outline-primary"
-            @click="viewInfo(view.id)"
+            @click="viewInfo(item.id)"
             v-b-modal.modal-scrollable
             >View</b-button
           >
@@ -37,31 +37,46 @@
       </v-data-table>
     </v-card>
 
-    <!-- modal -->
-    <b-modal
-      id="modal-scrollable"
-      hide-header
-      hide-footer
-      size="lg"
-      scrollable
-      title="Scrollable Content"
-      v-if="view"
-    >
-      <div :value="view.id">
-        <div>
-          <h3 style="display: flex; justify-content: center">
-            {{ view }}
-          </h3>
-
-          <div>
-            <table class="table">
-              <tbody>
-                <tr>
-                  <td>gender:</td>
-                  <td>{{ view.firstname }}</td>
-                </tr>
-              </tbody>
-            </table>
+    <!-- Modal -->
+    <b-modal id="modal-scrollable" size="lg" hide-header hide-footer scrollable>
+      <div class="modal-content">
+        <div class="head-content">
+          <h4 class="text-center">ລາຍລະອຽດ</h4>
+          <div class="customer-info">
+            <div>
+              <p class="mt-1">ລະຫັດບິນ: 1</p>
+              <p>ຊື່ພະນັກງານ: Annie</p>
+              <p>ເບີໂທ: 59863141</p>
+            </div>
+            <div>
+              <p>ວັນທີ: 07/31/2023</p>
+              <p>ເວລາ : 12:30</p>
+            </div>
+          </div>
+          <hr class="mt-3" />
+          <div class="product-detail">
+            <h><b>ລາຍການສິນຄ້າ:</b></h>
+            <div class="pro-table">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ຊື່ສິນຄ້າ</th>
+                    <th>ຈຳນວນ</th>
+                    <th>ລາຄາ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>ເຄັກຊ໊ອກໂກ້ແລັດ</td>
+                    <td>1</td>
+                    <td>75000 kip</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="total-content">
+                <p><b>ລາຄາລວມ: </b><span>75000</span> kip</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -86,10 +101,10 @@ export default {
           value: "id",
         },
         { text: "ເວລາ", value: "created_at" },
-        { text: "ພະນັກງານ", value: "user_id" },
-        { text: "ຈຳນວນສິນຄ້າ", value: "quantity_total" },
+        { text: "ລະຫັດພະນັກງານ", value: "user_id" },
+        // { text: "ຈຳນວນສິນຄ້າ", value: "quantity_total" },
         { text: "ລາຄາລວມ", value: "price_total" },
-        { text: "ຊຳລະ", value: "receipt_image" },
+        // { text: "ຊຳລະ", value: "receipt_image" },
         { text: "action", value: "action" },
       ],
     };
@@ -97,7 +112,7 @@ export default {
   mounted() {
     const token = localStorage.getItem("token");
     axios
-      .get("api/order", {
+      .get("api/alload", {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -118,7 +133,7 @@ export default {
       if (id !== null) {
         const token = localStorage.getItem("token");
 
-        const view = await axios.get("api/order", {
+        const view = await axios.get("api/order/alload", {
           headers: {
             Authorization: "Bearer " + token,
           },
@@ -132,6 +147,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/scss/colors";
 .card-cont {
   padding: 1rem;
 }
@@ -155,6 +171,38 @@ export default {
     justify-content: center;
     align-items: center;
     color: white;
+  }
+}
+.modal-content {
+  padding: 1rem;
+  .head-content {
+    .customer-info {
+      padding-top: 1rem;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+    }
+  }
+}
+.payment {
+  .img-payment {
+    margin-top: 7px;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    background-color: #e2e2e2;
+    justify-content: center;
+  }
+}
+.location-content {
+  padding: 1rem 0;
+  .location-des {
+    .txt-location {
+      margin-top: 7px;
+      padding: 0.5rem;
+      border: 1px solid gray;
+    }
   }
 }
 </style>

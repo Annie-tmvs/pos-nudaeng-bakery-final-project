@@ -29,7 +29,7 @@
               ><span>ສັ່ງຊື້</span>
               <div class="report d-flex">
                 <div>
-                  <!-- {{ items.filter((item) => item.id === null).length }} -->
+                  {{ items.filter((item) => item.id != null).length }}
                 </div>
               </div>
             </router-link>
@@ -63,18 +63,23 @@
         <div class="profile-content">
           <div class="profile">
             <div class="profile-image">
-              <img
-                src="https://media.discordapp.net/attachments/899150665358655518/1100442977744207943/166582e5408b6e5b6b0021e854f3901d.png?width=662&height=662"
+              <!-- <img
+                :src="'http://127.0.0.1:8000/storage/' + user.img"
                 class="d-inline-block"
-                alt="logo"
+                alt=""
+              /> -->
+              <img
+                src="https://media.istockphoto.com/id/530838781/vector/businesswoman-profile-icon-female-portrait-flat.jpg?s=612x612&w=0&k=20&c=0DXhfFseSQGQzHLbxbn93XEnGvu-aXabGnvJiA6Ulx8="
+                class="d-inline-block"
+                alt=""
               />
             </div>
             <div class="detail-content">
               <div class="profile-detail">
-                <!-- <h6 class="text-start">
-                  {{ user.firstname }} {{ user.lastname }}
+                <h6 class="text-start">
+                  <small> {{ user.firstname }} {{ user.lastname }}</small>
                 </h6>
-                <p>{{ user.roles }}</p> -->
+                <!-- <p>{{ user.roles }}</p> -->
               </div>
               <log-out-form />
             </div>
@@ -109,9 +114,11 @@ export default {
     //     console.log(e);
     //   });
     const token = localStorage.getItem("token");
+    const id = localStorage.getItem("id");
 
+    console.log("hiiiii" + id);
     axios
-      .get("api/users/selOne/1", {
+      .get("api/users/selOne/" + id, {
         headers: {
           Authorization: "Bearer " + token,
         },

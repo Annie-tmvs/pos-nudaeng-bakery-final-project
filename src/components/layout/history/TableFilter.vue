@@ -92,7 +92,7 @@
         </tbody>
       </table>
     </div>
-    <div class="pagination">
+    <!-- <div class="pagination"> -->
       <!-- <b-pagination
         class="pagination-btn"
         :total-rows="totalRows"
@@ -121,7 +121,7 @@
       >
         <i class="fa-solid fa-angles-right"></i>
       </div> -->
-    </div>
+    <!-- </div> -->
   </div>
 </template>
 

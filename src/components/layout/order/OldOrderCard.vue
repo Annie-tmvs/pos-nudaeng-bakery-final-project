@@ -14,19 +14,20 @@
           </tr>
         </thead>
         <tbody v-for="(item, i) in info" :key="i.id">
-          <tr v-show="item.status !== 1">
+          <tr v-show="item.status != 1">
             <td class="td-cont1"></td>
-            <td>
-              {{ item.id }}
-            </td>
+            <td><!-- {{ item.id }} -->2</td>
             <td>
               <div class="text-secondary">
-                <small>user id: {{ item.user_id }}</small>
+                <small
+                  >user id: 4
+                  <!-- {{ item.user_id }} -->
+                </small>
               </div>
               <div>{{ item.name }}</div>
             </td>
             <td class="td-cont1">
-              {{ moment(item.created_at).format("DD/MM/YYYY") }}
+              <!-- {{ moment(item.created_at).format("DD/MM/YYYY") }} -->03/07/2023
             </td>
             <td class="td-cont1">
               {{ moment(item.created_at).format("hh:ss a") }}
@@ -36,12 +37,7 @@
               ><span>ດຳເນີນການສຳເລັດ</span>
             </td>
             <td class="btn-content">
-              <div
-                class="btn"
-                tag="text"
-                v-b-modal.modal-scrollable
-                @click="viewModal(item.id)"
-              >
+              <div class="btn" tag="text" v-b-modal.modal-scrollable>
                 <p>
                   <i class="fa-solid fa-file-lines fa-sm p-2"></i>
                   ລາຍລະອຽດ
@@ -53,7 +49,62 @@
       </table>
     </div>
     <!-- Modal -->
-    <div v-if="showModalInfo">
+    <b-modal id="modal-scrollable" size="lg" hide-header hide-footer scrollable>
+      <div class="modal-content">
+        <div class="head-content">
+          <h4>ລາຍລະອຽດ</h4>
+          <div class="customer-info">
+            <div>
+              <p class="mt-1">Order Id: 4</p>
+              <p>ຊື່: Keo</p>
+              <p>ເບີໂທ: 55789255</p>
+            </div>
+            <div>
+              <p>ວັນທີ: 03/07/2023</p>
+              <p>ເວລາ : 12:30</p>
+            </div>
+          </div>
+          <hr class="mt-3" />
+          <div class="product-detail">
+            <h><b>ລາຍການສິນຄ້າ:</b></h>
+            <div class="pro-table">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ຊື່ສິນຄ້າ</th>
+                    <th>ຈຳນວນ</th>
+                    <th>ລາຄາ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>ເຄັກຊ໊ອກໂກ້ແລັດ</td>
+                    <td>1</td>
+                    <td>75000 kip</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="total-content">
+                <p><b>ລາຄາລວມ: </b><span>75000</span> kip</p>
+              </div>
+            </div>
+          </div>
+          <div class="payment">
+            <h><b>ຕິດຄັດການຊ່ຳລະ</b></h>
+            <div class="img-payment">
+              <img alt="image" />
+            </div>
+          </div>
+          <div class="location-content">
+            <div class="location-des">
+              <h><b>ສະຖານທີ່: </b></h>
+              <p class="txt-location">ນາສ້ຽວ ຮ່ອມ 15/6</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </b-modal>
+    <!-- <div v-if="showModalInfo">
       <b-modal
         id="modal-scrollable"
         hide-header
@@ -79,10 +130,10 @@
               </div>
             </div>
             <hr class="mt-3" />
+
             <div class="product-detail">
               <h><b>ລາຍການສິນຄ້າ:</b></h>
               <div class="pro-table">
-                <!-- table -->
                 <table class="table">
                   <thead>
                     <tr>
@@ -106,18 +157,20 @@
                 </div>
               </div>
             </div>
+
             <div class="payment">
               <h><b>ຕິດຄັດການຊ່ຳລະ</b></h>
               <div class="img-payment">
                 <img alt="image" />
               </div>
             </div>
+
             <div class="location-content">
               <div class="location-des">
                 <h><b>ສະຖານທີ່: </b></h>
                 <p class="txt-location">{{ showModalInfo.address }}</p>
               </div>
-              <!-- <div class="map-content">
+              <div class="map-content">
                 <p><b>ແຜນທີ່: </b></p>
                 <div class="googlemap">
                   <qr-code
@@ -127,12 +180,12 @@
                   >
                   </qr-code>
                 </div>
-              </div> -->
+              </div>
             </div>
           </div>
         </div>
       </b-modal>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -141,6 +194,9 @@ import moment from "moment";
 import axios from "axios";
 export default {
   components: {},
+  props: {
+    user: {},
+  },
   data() {
     return {
       info: [],

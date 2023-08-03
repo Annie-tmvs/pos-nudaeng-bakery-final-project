@@ -14,14 +14,14 @@
           </tr>
         </thead>
         <tbody v-for="(item, i) in items" :key="i.id" :item="item">
-          <tr v-show="item.status === 1">
+          <tr v-show="item.status == 0">
             <td class="td-cont1"></td>
             <td>
               {{ item.id }}
             </td>
             <td>
               <div class="text-secondary">
-                <small>{{ item.user_id }}</small>
+                <small>user id: {{ item.user_id }}</small>
               </div>
               <div>{{ item.name }}</div>
             </td>
@@ -36,12 +36,7 @@
               ><span>ກຳລັງລໍຖ້າດຳເນີນການ</span>
             </td>
             <td class="btn-content">
-              <div
-                class="btn"
-                tag="text"
-                v-b-modal="'modal1'"
-                @click="showModal(item.id)"
-              >
+              <div class="btn" tag="text" v-b-modal.modal-scrollable>
                 <p>
                   <i class="fa-solid fa-truck-ramp-box fa-sm p-2"></i>
                   ດຳເນີນການ
@@ -53,73 +48,69 @@
       </table>
     </div>
     <!-- Modal -->
-    <div v-if="showModalData">
-      <b-modal
-        id="modal1"
-        hide-header
-        hide-footer
-        hide-header-close
-        scrollable
-        size="lg"
-      >
-        <div class="modal-content">
-          <div class="head-content">
-            <h4>ລາຍລະອຽດ</h4>
-            <div class="customer-info">
-              <div>
-                <p class="mt-1" :value="showModalData.id">
-                  User Id: {{ showModalData.id }}
-                </p>
-                <p>
-                  ຊື່: {{ showModalData.name }}
-                  {{ showModalData.username }}
-                </p>
-              </div>
-              <div>
-                <p>ເວລາ : 3-7-2023, 11:35</p>
-                <p>ເບີໂທ: {{ showModalData.phone }}</p>
+
+    <b-modal
+      id="modal-scrollable"
+      hide-header
+      hide-footer
+      hide-header-close
+      scrollable
+      size="lg"
+    >
+      <div class="modal-content">
+        <div class="head-content">
+          <h4>ລາຍລະອຽດ</h4>
+          <div class="customer-info">
+            <div>
+              <p class="mt-1">User Id: 2</p>
+              <p>ຊື່: Koung</p>
+              <p>ເບີໂທ: 99805975</p>
+            </div>
+            <div>
+              <p>ວັນທີ: 31/07/2023</p>
+              <p>ເວລາ : 12:15</p>
+            </div>
+          </div>
+          <hr class="mt-3" />
+          <div class="product-detail">
+            <h><b>ລາຍການສິນຄ້າ:</b></h>
+            <div class="pro-table">
+              <!-- table -->
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ລຳດັບ</th>
+                    <th>ຊື່ສຶນຄ້າ</th>
+                    <th>ຈຳນວນ</th>
+                    <th>ລາຄາ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>cake</td>
+                    <td>2</td>
+                    <td>100,000 kip</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="total-content">
+                <p><b>ລາຄາລວມ: </b><span>100,000</span> kip</p>
               </div>
             </div>
-            <hr class="mt-3" />
-            <div class="product-detail">
-              <h><b>ລາຍການສິນຄ້າ:</b></h>
-              <div class="pro-table">
-                <!-- table -->
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>ລຳດັບ</th>
-                      <th>ຊື່ສຶນຄ້າ</th>
-                      <th>ຈຳນວນ</th>
-                      <th>ລາຄາ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>cake</td>
-                      <td>2</td>
-                      <td>100,000 kip</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div class="total-content">
-                  <p><b>ລາຄາລວມ: </b><span>100,000</span> kip</p>
-                </div>
-              </div>
+          </div>
+          <div class="payment">
+            <h><b>ຕິດຄັດການຊ່ຳລະ</b></h>
+            <div class="img-payment">
+              <img alt="image" />
             </div>
-            <div class="payment">
-              <h><b>ຕິດຄັດການຊ່ຳລະ</b></h>
-              <div class="img-payment">
-                <img alt="image" />
-              </div>
+          </div>
+          <div class="location-content">
+            <div class="location-des">
+              <h><b>ສະຖານທີ່: </b></h>
+              <p class="txt-location">ໜອງພພະຍາ ຮ່ອມ1</p>
             </div>
-            <div class="location-content">
-              <div class="location-des">
-                <h><b>ສະຖານທີ່: </b></h>
-                <p class="txt-location">{{ showModalData.address }}</p>
-              </div>
-              <!-- <div class="map-content">
+            <!-- <div class="map-content">
                 <p><b>ແຜນທີ່: </b></p>
                 <div class="googlemap">
                   <qr-code
@@ -130,15 +121,14 @@
                   </qr-code>
                 </div>
               </div> -->
-              <div class="button-content">
-                <div class="btn btn-success" @click="updateStatus">ຈັດສົ່ງ</div>
-                <div class="btn btn-danger">ຍົກເລີກ</div>
-              </div>
+            <div class="button-content">
+              <div class="btn btn-success">ຈັດສົ່ງ</div>
+              <div class="btn btn-danger">ຍົກເລີກ</div>
             </div>
           </div>
         </div>
-      </b-modal>
-    </div>
+      </div>
+    </b-modal>
   </div>
 </template>
 

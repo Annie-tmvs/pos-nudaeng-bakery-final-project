@@ -25,7 +25,7 @@
               <!-- Type product -->
               <div class="card-type-content" v-b-scrollspy>
                 <div class="card card-type">
-                  <a>ທັງໝົດ</a>
+                  <a @click="showAllItems()">ທັງໝົດ</a>
                 </div>
                 <div
                   class="card card-type"
@@ -47,7 +47,7 @@
                     <div class="img">
                       <img
                         class="img-body"
-                        :src="'http://localhost:8000/storage/' + item.img"
+                        :src="'http://127.0.0.1:8000/storage/' + item.img"
                         alt="image"
                       />
                     </div>
@@ -67,7 +67,7 @@
                         ></label
                       >
                     </div>
-                    <button @click="addToCart(item)">Add to Cart</button>
+                    <button>Add to Cart</button>
                   </div>
                 </div>
               </div>
@@ -81,41 +81,36 @@
               <small> order list </small>
               <!-- <hr class="my-3 "/> -->
               <div class="order-list">
-                <div
-                  class="card card-order"
-                  v-for="(item, i) in cartItems"
-                  :key="i"
-                >
+                <div class="card card-order">
                   <div class="img">
-                    <img alt="image" />
+                    <img
+                      alt="image"
+                      src="https://media.discordapp.net/attachments/905843816697835591/1135106827923759165/StrawberryCake3.jpg?width=662&height=662"
+                    />
                   </div>
                   <div class="card-main">
                     <div class="top-cont">
                       <div>
-                        <h>{{ item.name }}</h>
-                        <p>{{ item.totalPrice }} kip</p>
+                        <h>ເຄັກສະຕໍເບີລີ</h>
+                        <p>ລາຄາ: 40000 kip</p>
                         <div class="quantity-content">
-                          <!-- <button v-on:click="decrementQuantity(item)">
+                          <button v-on:click="decrementQuantity(item)">
                             -
-                          </button> -->
+                          </button>
                           <div class="quantity">
                             <input
                               placeholder="ຈຳນວນ"
-                              :value="
-                                isMaxStockReached(item)
-                                  ? 'Maximum stock reached'
-                                  : item.quantity
-                              "
+                              class="text-center"
+                              value="2"
                             />
                           </div>
-                          <!-- <button v-on:click="incrementQuantity(item)">
+                          <button v-on:click="incrementQuantity(item)">
                             +
-                          </button> -->
+                          </button>
                         </div>
                       </div>
-
                       <div>
-                        <button @click="removeFromCart(item)">
+                        <button>
                           <i class="fa-solid fa-trash fa-sm"></i>
                         </button>
                       </div>
@@ -129,20 +124,20 @@
                 <div class="total-card">
                   <h5><b>ລວມ</b></h5>
                   <hr />
-                  <div class="row">
+                  <!-- <div class="row">
                     <div>
                       <h>ຈຳນວນ :</h>
                     </div>
                     <div>
                       <p>{{ cartTotalQuantity }}</p>
                     </div>
-                  </div>
+                  </div> -->
                   <div class="row">
                     <div>
                       <h>ລາຄາລວມ :</h>
                     </div>
-                    <div>
-                      <p>{{ cartTotalPrice }} Kip</p>
+                    <div class="text-end">
+                      <p>40000 Kip</p>
                     </div>
                   </div>
                 </div>
@@ -177,7 +172,6 @@ export default {
   },
   mounted() {
     const token = localStorage.getItem("token");
-
     axios
       .get("api/product_type", {
         headers: {
@@ -191,18 +185,32 @@ export default {
         console.error("Error:", error);
       });
 
-    axios
-      .get("api/product")
-      .then((response) => (this.menuItems = response.data))
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-
     this.filterProducts();
   },
   methods: {
     pdType(id) {
-      console.log(id);
+      const token = localStorage.getItem("token");
+      console.log("product type: " + id);
+
+      axios
+        .get("api/product", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((response) => {
+          const filteredItems = response.data.filter(
+            (item) => item.product_type_id === id
+          );
+          this.menuItems = filteredItems;
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    },
+    // method to show all menu
+    showAllItems() {
+      this.menuItems = this.originalMenuItems;
     },
   },
 };
@@ -279,10 +287,6 @@ export default {
         background: $yellow;
         color: black;
       }
-    }
-    a:active {
-      background: $yellow;
-      color: black;
     }
   }
 }
@@ -420,6 +424,7 @@ input:focus {
   }
   .total-card {
     text-align: start;
+    padding: 0 10px;
     .row {
       display: flex;
       flex-wrap: wrap;
@@ -447,16 +452,19 @@ input:focus {
 }
 .quantity-content {
   display: flex;
-  width: 200;
   flex-direction: row;
-  background-color: #ececec;
+  width: 100px;
+  // background-color: #ececec;
 }
 .quantity {
   height: 25px;
-  width: 100px;
-  padding-left: 10px;
+  width: 50px;
+  margin: 0 10px;
   text-align: center;
   background-color: #ececec;
   border-radius: 10px;
+  input {
+    width: 50px;
+  }
 }
 </style>
