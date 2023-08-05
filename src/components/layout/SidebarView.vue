@@ -25,12 +25,13 @@
           </li>
           <li>
             <router-link tag="a" to="/order">
-              <i id="btn" class="fa-solid fa-bell fa-md p-2"></i
-              ><span>ສັ່ງຊື້</span>
-              <div class="report d-flex">
-                <div>
-                  {{ items.filter((item) => item.id != null).length }}
-                </div>
+              <div>
+                <i id="btn" class="fa-solid fa-bell fa-md p-2"></i
+                ><span>ສັ່ງຊື້</span>
+              </div>
+              <v-spacer></v-spacer>
+              <div class="report">
+                {{ items.filter((item) => item.status == 0).length }}
               </div>
             </router-link>
           </li>
@@ -63,12 +64,14 @@
         <div class="profile-content">
           <div class="profile">
             <div class="profile-image">
-              <!-- <img
+              <img
+                v-if="user.img != null"
                 :src="'http://127.0.0.1:8000/storage/' + user.img"
                 class="d-inline-block"
                 alt=""
-              /> -->
+              />
               <img
+                v-else
                 src="https://media.istockphoto.com/id/530838781/vector/businesswoman-profile-icon-female-portrait-flat.jpg?s=612x612&w=0&k=20&c=0DXhfFseSQGQzHLbxbn93XEnGvu-aXabGnvJiA6Ulx8="
                 class="d-inline-block"
                 alt=""
@@ -163,14 +166,16 @@ export default {
 }
 .report {
   display: flex;
-  padding: 5px;
-  margin-left: 2rem;
-  justify-content: end;
-  color: red;
-  // background-color: red;
-  border-radius: 10px;
+  justify-content: center;
+  align-items: center;
+  margin-right: 20px;
+  width: 30px;
+  height: 30px;
+  color: white;
+  background-color: rgb(219, 20, 20);
+  border-radius: 25px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: bold;
 }
 nav {
   position: relative;

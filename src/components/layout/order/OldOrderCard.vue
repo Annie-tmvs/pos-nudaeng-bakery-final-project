@@ -14,20 +14,17 @@
           </tr>
         </thead>
         <tbody v-for="(item, i) in info" :key="i.id">
-          <tr v-show="item.status != 1">
+          <tr v-show="item.status == 1">
             <td class="td-cont1"></td>
-            <td><!-- {{ item.id }} -->2</td>
+            <td>{{ item.id }}</td>
             <td>
               <div class="text-secondary">
-                <small
-                  >user id: 4
-                  <!-- {{ item.user_id }} -->
-                </small>
+                <small>user id: {{ item.user_id }}</small>
               </div>
               <div>{{ item.name }}</div>
             </td>
             <td class="td-cont1">
-              <!-- {{ moment(item.created_at).format("DD/MM/YYYY") }} -->03/07/2023
+              {{ moment(item.created_at).format("DD/MM/YYYY") }}
             </td>
             <td class="td-cont1">
               {{ moment(item.created_at).format("hh:ss a") }}
@@ -37,7 +34,12 @@
               ><span>ດຳເນີນການສຳເລັດ</span>
             </td>
             <td class="btn-content">
-              <div class="btn" tag="text" v-b-modal.modal-scrollable>
+              <div
+                class="btn"
+                tag="text"
+                v-b-modal.modal-scrollable
+                @click="oldOrderById(item.id)"
+              >
                 <p>
                   <i class="fa-solid fa-file-lines fa-sm p-2"></i>
                   ລາຍລະອຽດ
@@ -49,88 +51,29 @@
       </table>
     </div>
     <!-- Modal -->
-    <b-modal id="modal-scrollable" size="lg" hide-header hide-footer scrollable>
-      <div class="modal-content">
-        <div class="head-content">
-          <h4>ລາຍລະອຽດ</h4>
-          <div class="customer-info">
-            <div>
-              <p class="mt-1">Order Id: 4</p>
-              <p>ຊື່: Keo</p>
-              <p>ເບີໂທ: 55789255</p>
-            </div>
-            <div>
-              <p>ວັນທີ: 03/07/2023</p>
-              <p>ເວລາ : 12:30</p>
-            </div>
-          </div>
-          <hr class="mt-3" />
-          <div class="product-detail">
-            <h><b>ລາຍການສິນຄ້າ:</b></h>
-            <div class="pro-table">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>ຊື່ສິນຄ້າ</th>
-                    <th>ຈຳນວນ</th>
-                    <th>ລາຄາ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>ເຄັກຊ໊ອກໂກ້ແລັດ</td>
-                    <td>1</td>
-                    <td>75000 kip</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div class="total-content">
-                <p><b>ລາຄາລວມ: </b><span>75000</span> kip</p>
-              </div>
-            </div>
-          </div>
-          <div class="payment">
-            <h><b>ຕິດຄັດການຊ່ຳລະ</b></h>
-            <div class="img-payment">
-              <img alt="image" />
-            </div>
-          </div>
-          <div class="location-content">
-            <div class="location-des">
-              <h><b>ສະຖານທີ່: </b></h>
-              <p class="txt-location">ນາສ້ຽວ ຮ່ອມ 15/6</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </b-modal>
-    <!-- <div v-if="showModalInfo">
-      <b-modal
-        id="modal-scrollable"
-        hide-header
-        hide-footer
-        hide-header-close
-        scrollable
-        size="lg"
-      >
+    <div v-if="oldOrderID">
+      <b-modal id="modal-scrollable" size="lg" hide-footer>
         <div class="modal-content">
           <div class="head-content">
             <h4>ລາຍລະອຽດ</h4>
+            <h6>ລະຫັດບິນ: {{ oldOrderID.id }}</h6>
             <div class="customer-info">
               <div>
-                <p class="mt-1">User Id: {{ showModalInfo.id }}</p>
-                <p>
-                  ຊື່: {{ showModalInfo.name }}
-                  {{ showModalInfo.username }}
-                </p>
+                <p class="mt-1">Order Id: {{ oldOrderID.user_id }}</p>
+                <p>ຊື່ລູກຄ້າ: {{ oldOrderID.firstname }}</p>
+                <p>ເບີໂທ: {{ oldOrderID.tel }}</p>
               </div>
               <div>
-                <p>ເວລາ : 3-7-2023, 11:35</p>
-                <p>ເບີໂທ: {{ showModalInfo.phone }}</p>
+                <p>
+                  ວັນທີ:
+                  {{ moment(oldOrderID.created_at).format("DD/MM/YYYY") }}
+                </p>
+                <p>
+                  ເວລາ: {{ moment(oldOrderID.created_at).format("hh:ss a") }}
+                </p>
               </div>
             </div>
             <hr class="mt-3" />
-
             <div class="product-detail">
               <h><b>ລາຍການສິນຄ້າ:</b></h>
               <div class="pro-table">
@@ -140,52 +83,51 @@
                       <th>ລຳດັບ</th>
                       <th>ຊື່ສຶນຄ້າ</th>
                       <th>ຈຳນວນ</th>
-                      <th>ລາຄາ</th>
+                      <th>ລາຄາ/ຫົວໜ່ວຍ</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>cake</td>
-                      <td>2</td>
-                      <td>100,000 kip</td>
+                    <tr
+                      v-for="(orderDe, i) in oldOrderID.order_detail"
+                      :key="i"
+                    >
+                      <td>{{ orderDe.id }}</td>
+                      <td>{{ orderDe.name }}</td>
+                      <td>{{ orderDe.quantity }}</td>
+                      <td>{{ orderDe.price }} kip</td>
                     </tr>
                   </tbody>
                 </table>
                 <div class="total-content">
-                  <p><b>ລາຄາລວມ: </b><span>100,000</span> kip</p>
+                  <p>
+                    <b>ລາຄາລວມ: </b
+                    ><span>{{ oldOrderID.price_total }}</span> kip
+                  </p>
                 </div>
               </div>
             </div>
-
             <div class="payment">
               <h><b>ຕິດຄັດການຊ່ຳລະ</b></h>
               <div class="img-payment">
-                <img alt="image" />
+                <img
+                  width="300"
+                  alt="image"
+                  :src="
+                    'http://127.0.0.1:8000/storage/' + oldOrderID.receipt_image
+                  "
+                />
               </div>
             </div>
-
             <div class="location-content">
               <div class="location-des">
                 <h><b>ສະຖານທີ່: </b></h>
-                <p class="txt-location">{{ showModalInfo.address }}</p>
-              </div>
-              <div class="map-content">
-                <p><b>ແຜນທີ່: </b></p>
-                <div class="googlemap">
-                  <qr-code
-                    text="https://maps.app.goo.gl/BeAm2gaKuFAo3xXs8?g_st=ic"
-                    size="250"
-                    error-level="L"
-                  >
-                  </qr-code>
-                </div>
+                <p class="txt-location">{{ oldOrderID.location }}</p>
               </div>
             </div>
           </div>
         </div>
       </b-modal>
-    </div> -->
+    </div>
   </div>
 </template>
 
@@ -201,53 +143,38 @@ export default {
     return {
       info: [],
       showModalInfo: null,
+      oldOrderID: null,
     };
   },
   mounted() {
     const token = localStorage.getItem("token");
     axios
-      .get("api/order", {
+      .get("api/allorderwithdetail", {
         headers: {
           Authorization: "Bearer " + token,
         },
       })
       .then((res) => {
-        this.info = res.data;
+        this.info = res.data.reverse();
       });
   },
   methods: {
-    showModal(itemId) {
+    moment: function () {
+      return moment();
+    },
+    oldOrderById(oldItem) {
+      console.log("old order:" + oldItem);
       const token = localStorage.getItem("token");
       axios
-        .get(`api/order/${itemId}`, {
+        .get("api/getOrderById/" + oldItem, {
           headers: {
             Authorization: "Bearer " + token,
           },
         })
         .then((res) => {
-          this.showModalData = res.data;
+          this.oldOrderID = res.data;
+          console.log(oldOrderID);
         });
-    },
-    updateStatus() {
-      const token = localStorage.getItem("token");
-      axios
-        .post("api/order", {
-          id: this.showModalData.id, // replace with the ID of the row you want to update
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        })
-        .then((response) => {
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log(error.response.data);
-        });
-    },
-  },
-  methods: {
-    moment: function () {
-      return moment();
     },
   },
 };
@@ -327,6 +254,10 @@ body {
     h4 {
       text-align: center;
       font-weight: bold;
+    }
+    h6 {
+      text-align: center;
+      font-weight: 500;
     }
   }
   .customer-info {

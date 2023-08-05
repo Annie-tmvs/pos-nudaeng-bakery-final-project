@@ -36,7 +36,12 @@
               ><span>ກຳລັງລໍຖ້າດຳເນີນການ</span>
             </td>
             <td class="btn-content">
-              <div class="btn" tag="text" v-b-modal.modal-scrollable>
+              <div
+                class="btn"
+                tag="text"
+                v-b-modal.modal1
+                @click="orderById(item.id)"
+              >
                 <p>
                   <i class="fa-solid fa-truck-ramp-box fa-sm p-2"></i>
                   ດຳເນີນການ
@@ -49,86 +54,89 @@
     </div>
     <!-- Modal -->
 
-    <b-modal
-      id="modal-scrollable"
-      hide-header
-      hide-footer
-      hide-header-close
-      scrollable
-      size="lg"
-    >
-      <div class="modal-content">
-        <div class="head-content">
-          <h4>ລາຍລະອຽດ</h4>
-          <div class="customer-info">
-            <div>
-              <p class="mt-1">User Id: 2</p>
-              <p>ຊື່: Koung</p>
-              <p>ເບີໂທ: 99805975</p>
+    <div v-if="orderID">
+      <b-modal id="modal1" hide-header hide-footer hide-header-close size="lg">
+        <div class="modal-content">
+          <div class="head-content">
+            <h4>ລາຍລະອຽດ</h4>
+            <h6>ລະຫັດບິນ: {{ orderID.id }}</h6>
+            <div class="customer-info">
+              <div>
+                <p class="mt-1">User Id: {{ orderID.user_id }}</p>
+                <p>ຊື່ລູກຄ້າ: {{ orderID.firstname }}</p>
+                <p>ເບີໂທ: {{ orderID.tel }}</p>
+              </div>
+              <div>
+                <p>
+                  ວັນທີ: {{ moment(orderID.created_at).format("DD/MM/YYYY") }}
+                </p>
+                <p>ເວລາ: {{ moment(orderID.created_at).format("hh:ss a") }}</p>
+              </div>
             </div>
-            <div>
-              <p>ວັນທີ: 31/07/2023</p>
-              <p>ເວລາ : 12:15</p>
+            <hr class="mt-3" />
+            <div class="product-detail">
+              <h><b>ລາຍການສິນຄ້າ:</b></h>
+              <div class="pro-table">
+                <!-- table -->
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>ລຳດັບ</th>
+                      <th>ຊື່ສຶນຄ້າ</th>
+                      <th>ຈຳນວນ</th>
+                      <th>ລາຄາ/ຫົວໜ່ວຍ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(orderDe, i) in orderID.order_detail" :key="i">
+                      <td>{{ orderDe.id }}</td>
+                      <td>{{ orderDe.name }}</td>
+                      <td>{{ orderDe.quantity }}</td>
+                      <td>{{ orderDe.price }} kip</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="total-content">
+                  <p>
+                    <b>ລາຄາລວມ: </b><span>{{ orderID.price_total }}</span> kip
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-          <hr class="mt-3" />
-          <div class="product-detail">
-            <h><b>ລາຍການສິນຄ້າ:</b></h>
-            <div class="pro-table">
-              <!-- table -->
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>ລຳດັບ</th>
-                    <th>ຊື່ສຶນຄ້າ</th>
-                    <th>ຈຳນວນ</th>
-                    <th>ລາຄາ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>cake</td>
-                    <td>2</td>
-                    <td>100,000 kip</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div class="total-content">
-                <p><b>ລາຄາລວມ: </b><span>100,000</span> kip</p>
+            <div class="payment">
+              <h><b>ຕິດຄັດການຊ່ຳລະ</b></h>
+              <div class="img-payment">
+                <img
+                  width="300"
+                  :src="
+                    'http://127.0.0.1:8000/storage/' + orderID.receipt_image
+                  "
+                  alt="image"
+                />
+              </div>
+            </div>
+            <div class="location-content">
+              <div class="location-des">
+                <h><b>ສະຖານທີ່: </b></h>
+                <p class="txt-location">{{ orderID.location }}</p>
+              </div>
+              <div class="button-content">
+                <div
+                  typ="btn"
+                  class="btn btn-success"
+                  @click="confirmOrder(orderID)"
+                >
+                  ຢືນຢັນ
+                </div>
+                <div typ="btn" class="btn btn-danger" @click="hideModal1">
+                  ຍົກເລີກ
+                </div>
               </div>
             </div>
           </div>
-          <div class="payment">
-            <h><b>ຕິດຄັດການຊ່ຳລະ</b></h>
-            <div class="img-payment">
-              <img alt="image" />
-            </div>
-          </div>
-          <div class="location-content">
-            <div class="location-des">
-              <h><b>ສະຖານທີ່: </b></h>
-              <p class="txt-location">ໜອງພພະຍາ ຮ່ອມ1</p>
-            </div>
-            <!-- <div class="map-content">
-                <p><b>ແຜນທີ່: </b></p>
-                <div class="googlemap">
-                  <qr-code
-                    text="https://maps.app.goo.gl/BeAm2gaKuFAo3xXs8?g_st=ic"
-                    size="250"
-                    error-level="L"
-                  >
-                  </qr-code>
-                </div>
-              </div> -->
-            <div class="button-content">
-              <div class="btn btn-success">ຈັດສົ່ງ</div>
-              <div class="btn btn-danger">ຍົກເລີກ</div>
-            </div>
-          </div>
         </div>
-      </div>
-    </b-modal>
+      </b-modal>
+    </div>
   </div>
 </template>
 
@@ -140,51 +148,68 @@ export default {
   data() {
     return {
       items: [],
-      showModalData: null,
+      orderID: null,
+      status: 1,
     };
   },
   mounted() {
     const token = localStorage.getItem("token");
     axios
-      .get("api/order", {
+      .get("api/allorderwithdetail", {
         headers: {
           Authorization: "Bearer " + token,
         },
       })
       .then((res) => {
-        this.items = res.data;
+        this.items = res.data.reverse();
+        console.log(items);
       });
-  },
-  methods: {
-    showModal(itemId) {
-      const token = localStorage.getItem("token");
-      axios
-        .get(`api/order/${itemId}`, {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        })
-        .then((res) => {
-          this.showModalData = res.data;
-        });
-    },
-    updateStatus() {
-      axios
-        .post("api/order", {
-          id: this.showModalData.id, // replace with the ID of the row you want to update
-        })
-        .then((response) => {
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log(error.response.data);
-        });
-    },
   },
   methods: {
     moment: function () {
       return moment();
     },
+    hideModal1() {
+      this.$root.$emit("bv::hide::modal", "modal1", "#btnShow");
+    },
+    orderById(item) {
+      console.log("current order:" + item);
+      const token = localStorage.getItem("token");
+      axios
+        .get("api/getOrderById/" + item, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((res) => {
+          this.orderID = res.data;
+          console.log(orderID);
+        });
+    },
+    //--------------------------------------------------------------------------------------------//
+    confirmOrder(orderID) {
+      console.log(orderID.id);
+      const formData = new FormData();
+      formData.append("_method", "put");
+      formData.append("status", this.status);
+
+      const token = localStorage.getItem("token");
+      axios
+        .post("api/order/" + orderID.id, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Accept: "application/json",
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then(({ data }) => {
+          alert("saveddddd");
+          // this.$router.push({ path: "/user" });
+          window.location.reload();
+          console.log(data);
+        });
+    },
+    //---------------------------------------------------------------------------------------------//
   },
 };
 </script>
@@ -263,6 +288,10 @@ body {
     h4 {
       text-align: center;
       font-weight: bold;
+    }
+    h6 {
+      text-align: center;
+      font-weight: 500;
     }
   }
   .customer-info {

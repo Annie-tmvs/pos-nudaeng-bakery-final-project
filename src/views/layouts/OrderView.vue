@@ -16,7 +16,7 @@
               <h6>
                 ສິນຄ້າລໍຖ້າດຳເນີນການ:
                 <b class="text-warning">
-                  {{ items.filter((item) => item.status != null).length }}</b
+                  {{ items.filter((item) => item.status == 0).length }}</b
                 >
                 ສິນຄ້າ
               </h6>
@@ -24,7 +24,7 @@
             <div class="card card-old">
               <h6>
                 ສິນຄ້າທີ່ດຳເນີນການສຳເລັດ:
-                <b> {{ items.filter((item) => item.status != null).length }}</b>
+                <b> {{ items.filter((item) => item.status == 1).length }}</b>
                 ສິນຄ້າ
               </h6>
             </div>

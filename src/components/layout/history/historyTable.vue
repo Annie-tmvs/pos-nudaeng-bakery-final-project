@@ -11,10 +11,27 @@
             hide-details
           ></v-text-field>
         </div>
-        <div class="card">
-          <h6>
-            ຍອດຂາຍ: <b class="text-info"> {{ items.length }}</b> ສິນຄ້າ
-          </h6>
+        <div class="d-flex flex-direction-row gap-2">
+          <div class="card">
+            <h6>
+              ຍອດຂາຍມື້ນີ້:
+              <b class="text-warning">
+                {{
+                  items.filter(
+                    (item) =>
+                      moment(item.created_at).format("L") ==
+                      moment().format("L")
+                  ).length
+                }}</b
+              >
+              ສິນຄ້າ
+            </h6>
+          </div>
+          <div class="card">
+            <h6>
+              ຍອດຂາຍທັງໝົດ: <b class="text-info"> {{ items.length }}</b> ສິນຄ້າ
+            </h6>
+          </div>
         </div>
       </v-card-title>
       <v-data-table
@@ -24,63 +41,79 @@
         :search="search"
       >
         <template v-slot:item.created_at="{ item }">
-          {{ moment(item.created_at).format("L") }}
+          {{ moment().format("DD.MM.YYYY") }}
+          {{ item.created_at }}
         </template>
         <template v-slot:item.action="{ item }">
           <b-button
             variant="outline-primary"
-            @click="viewInfo(item.id)"
             v-b-modal.modal-scrollable
+            @click="historyById(item.id)"
             >View</b-button
           >
         </template>
       </v-data-table>
     </v-card>
-
     <!-- Modal -->
-    <b-modal id="modal-scrollable" size="lg" hide-header hide-footer scrollable>
-      <div class="modal-content">
-        <div class="head-content">
-          <h4 class="text-center">ລາຍລະອຽດ</h4>
-          <div class="customer-info">
-            <div>
-              <p class="mt-1">ລະຫັດບິນ: 1</p>
-              <p>ຊື່ພະນັກງານ: Annie</p>
-              <p>ເບີໂທ: 59863141</p>
+    <div v-if="viewItem">
+      <b-modal id="modal-scrollable" size="lg" hide-footer scrollable>
+        <div class="modal-content">
+          <div class="head-content">
+            <h4 class="text-center">ລາຍລະອຽດ</h4>
+            <h6 class="text-center">ລະຫັດບິນ: {{ viewItem.id }}</h6>
+            <div class="customer-info">
+              <div>
+                <p class="mt-1">
+                  User Id: {{ viewItem.user_id }}, <br />
+                  Role:
+                  {{ viewItem.customer.roles }}
+                </p>
+                <h6>
+                  ຊື່: {{ viewItem.customer.firstname }}
+                  {{ viewItem.customer.lastname }}
+                </h6>
+                <h6>ເບີໂທ: 59863141</h6>
+              </div>
+              <div>
+                <h6>
+                  ວັນທີ: {{ moment(viewItem.created_at).format("DD/MM/YYYY") }}
+                </h6>
+                <h6>
+                  ເວລາ : {{ moment(viewItem.created_at).format("hh:mm a") }}
+                </h6>
+              </div>
             </div>
-            <div>
-              <p>ວັນທີ: 07/31/2023</p>
-              <p>ເວລາ : 12:30</p>
-            </div>
-          </div>
-          <hr class="mt-3" />
-          <div class="product-detail">
-            <h><b>ລາຍການສິນຄ້າ:</b></h>
-            <div class="pro-table">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>ຊື່ສິນຄ້າ</th>
-                    <th>ຈຳນວນ</th>
-                    <th>ລາຄາ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>ເຄັກຊ໊ອກໂກ້ແລັດ</td>
-                    <td>1</td>
-                    <td>75000 kip</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div class="total-content">
-                <p><b>ລາຄາລວມ: </b><span>75000</span> kip</p>
+            <hr class="mt-3" />
+            <div class="product-detail">
+              <h5 class="text-warning">ລາຍການສິນຄ້າ:</h5>
+              <div class="pro-table">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>ຊື່ສິນຄ້າ</th>
+                      <th>ຈຳນວນ</th>
+                      <th>ລາຄາ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>ເຄັກຊ໊ອກໂກ້ແລັດ</td>
+                      <td>1</td>
+                      <td>75000 kip</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="total-content">
+                  <p>
+                    <b>ລາຄາລວມ: </b><span class="text-warning">75000</span> kip
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </b-modal>
+      </b-modal>
+    </div>
   </div>
 </template>
 
@@ -90,9 +123,11 @@ import moment from "moment";
 export default {
   data() {
     return {
+      originalDate: "2023-08-04T19:41:49.000000Z",
       search: "",
+      historyDetail: [],
+      viewItem: null,
       items: [],
-      view: [],
       headers: [
         {
           text: "ເລກບິນ",
@@ -100,9 +135,10 @@ export default {
           sortable: false,
           value: "id",
         },
-        { text: "ເວລາ", value: "created_at" },
         { text: "ລະຫັດພະນັກງານ", value: "user_id" },
-        // { text: "ຈຳນວນສິນຄ້າ", value: "quantity_total" },
+        { text: "ເວລາ", value: "created_at" },
+        // { text: "ວັນທີ", value: "created_at" },
+
         { text: "ລາຄາລວມ", value: "price_total" },
         // { text: "ຊຳລະ", value: "receipt_image" },
         { text: "action", value: "action" },
@@ -112,14 +148,14 @@ export default {
   mounted() {
     const token = localStorage.getItem("token");
     axios
-      .get("api/alload", {
+      .get("api/order", {
         headers: {
           Authorization: "Bearer " + token,
         },
       })
       .then((response) => {
-        this.items = response.data;
-        console.log(response);
+        this.items = response.data.reverse();
+        console.log(items);
       })
       .catch((e) => {
         console.log(e);
@@ -129,18 +165,30 @@ export default {
     moment: function () {
       return moment();
     },
-    async viewInfo(id) {
-      if (id !== null) {
-        const token = localStorage.getItem("token");
-
-        const view = await axios.get("api/order/alload", {
+    format_date(value) {
+      if (value) {
+        return moment(String(value)).format("L");
+      }
+    },
+    //------------------------------------------------------------------------------//
+    historyById(item) {
+      console.log("history:" + item);
+      const token = localStorage.getItem("token");
+      axios
+        .get("api/order/" + item, {
           headers: {
             Authorization: "Bearer " + token,
           },
+        })
+        .then((res) => {
+          this.viewItem = res.data;
+          console.log(viewItem);
         });
-        this.view = view.data;
-        console.log(view);
-      }
+    },
+  },
+  computed: {
+    formattedDate() {
+      return moment(this.originalDate).format("YYYY-MM-DD");
     },
   },
 };
