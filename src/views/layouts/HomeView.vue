@@ -242,13 +242,15 @@
 
     <!-- modal bill---------------------------------------------------------------------------------------------->
     <b-modal id="modal-scrollable" size="md" hide-footer>
-      <div class="my-5 mx-3" v-for="(bill, i) in items" :key="i">
+      <div
+        id="pdfRef"
+        class="my-5 bill-content"
+        style="padding: 0, 1rem"
+        v-for="(bill, i) in items"
+        :key="i"
+      >
         <div class="d-flex justify-content-center">
-          <img
-            width="180"
-            alt="image"
-            src="https://media.discordapp.net/attachments/905843816697835591/1117780591329431563/IMG_1434.png?width=625&height=625"
-          />
+          <img width="180" alt="image" src="../../assets/nudaeng.png" />
         </div>
         <div class="text-center mb-3">
           <h6>RECEIPT</h6>
@@ -314,7 +316,7 @@
         </div>
       </div>
       <div class="d-flex justify-content-end">
-        <button style="width: 100px; height: 50px">
+        <button @click="exportPDF" style="width: 100px; height: 50px">
           <i class="fa-solid fa-print"></i> print
         </button>
       </div>
@@ -326,6 +328,9 @@
 // @ is an alias to /src
 import Swal from "sweetalert2";
 import axios from "axios";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { ref } from "vue";
 export default {
   name: "HomeView",
   components: {},
@@ -542,6 +547,49 @@ export default {
           });
           console.error("Error:", error);
         });
+    },
+    //------------------------------------------------------------------------------------------------//
+    exportPDF() {
+      const input = document.getElementById("pdfRef");
+      html2canvas(input).then((canvas) => {
+        const imgWidth = 208;
+        const pageHeight = 295;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+        heightLeft -= pageHeight;
+        const doc = new jsPDF("p", "mm");
+        doc.addImage(
+          canvas,
+          "PNG",
+          0,
+          position,
+          imgWidth,
+          imgHeight,
+          "",
+          "FAST"
+        );
+        heightLeft -= 148;
+
+        // Output the PDF as a Blob
+        const pdfBlob = doc.output("blob");
+
+        // Create a URL for the Blob
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+
+        // Open the PDF in a new tab
+        const newTab = window.open(pdfUrl, "_blank");
+
+        // Optionally revoke the URL after some time to free up memory
+        setTimeout(() => {
+          URL.revokeObjectURL(pdfUrl);
+        }, 1000);
+
+        // Wait for the new tab to load and trigger the print function
+        newTab.onload = () => {
+          newTab.print();
+        };
+      });
     },
   },
 };
@@ -815,5 +863,10 @@ input:focus {
   align-items: center;
   text-align: center;
   background-color: goldenrod;
+}
+.bill-content {
+  // background-color: #c66060;
+  padding: 1rem;
+  top: 1rem;
 }
 </style>
