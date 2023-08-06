@@ -61,28 +61,32 @@
             <h4>ລາຍລະອຽດ</h4>
             <h6>ລະຫັດບິນ: {{ orderID.id }}</h6>
             <div class="customer-info">
-              <div>
-                <p class="mt-1">User Id: {{ orderID.user_id }}</p>
-                <p>ຊື່ລູກຄ້າ: {{ orderID.firstname }}</p>
-                <p>ເບີໂທ: {{ orderID.tel }}</p>
+              <div class="text-start">
+                <p class="mt-1">
+                  User Id: {{ orderID.user_id }} <br />
+                  Role:
+                  {{ orderID.roles }}
+                </p>
+                <h6>ຊື່ລູກຄ້າ: {{ orderID.firstname }}</h6>
+                <h6>ເບີໂທ: {{ orderID.tel }}</h6>
               </div>
               <div>
-                <p>
+                <h6>
                   ວັນທີ:
                   {{
                     new Date(orderID.created_at)
                       .toLocaleString()
                       .substring(0, 8)
                   }}
-                </p>
-                <p>
+                </h6>
+                <h6>
                   ເວລາ:
                   {{
                     new Date(orderID.created_at)
                       .toLocaleString()
                       .substring(21, 9)
                   }}
-                </p>
+                </h6>
               </div>
             </div>
             <hr class="mt-3" />
@@ -115,7 +119,7 @@
                 </div>
               </div>
             </div>
-            <div class="payment">
+            <div class="payment" v-show="orderID.receipt_image != null">
               <h><b>ຕິດຄັດການຊ່ຳລະ</b></h>
               <div class="img-payment">
                 <img
@@ -128,7 +132,7 @@
               </div>
             </div>
             <div class="location-content">
-              <div class="location-des">
+              <div v-show="orderID.location != null" class="location-des">
                 <h><b>ສະຖານທີ່: </b></h>
                 <p class="txt-location">{{ orderID.location }}</p>
               </div>
@@ -153,6 +157,7 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 import moment from "moment";
 import axios from "axios";
 export default {
@@ -215,9 +220,20 @@ export default {
           },
         })
         .then(({ data }) => {
-          alert("ດຳເນີນການສຳເລັດ");
-          // this.$router.push({ path: "/user" });
-          window.location.reload();
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Your work has been saved",
+            showConfirmButton: false,
+            iconColor: "limegreen",
+            width: 600,
+            padding: "3em",
+            timer: 1500,
+          });
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+          // alert("ດຳເນີນການສຳເລັດ");
           console.log(data);
         });
     },
@@ -281,7 +297,7 @@ body {
     text-decoration: none;
     cursor: pointer;
     font-weight: bold;
-    color: rgb(29, 33, 134);
+    color: #1d2186;
     width: fit-content;
     height: fit-content;
     border: 0;
@@ -311,6 +327,9 @@ body {
     display: flex;
     align-items: end;
     justify-content: space-between;
+    h6 {
+      text-align: start;
+    }
   }
 }
 .pro-table {

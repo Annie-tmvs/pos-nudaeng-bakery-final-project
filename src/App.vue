@@ -2,7 +2,7 @@
   <div>
     <sidebar-view v-if="showNavBar" />
     <div id="app">
-      <div class="home-content">
+      <div class="index-content">
         <router-view />
       </div>
     </div>
@@ -21,12 +21,12 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;700&display=swap");
 * {
   font-family: "Noto Sans Lao", sans-serif;
 }
-.home-content {
+.index-content {
   position: absolute;
   top: 0;
   height: 100%;

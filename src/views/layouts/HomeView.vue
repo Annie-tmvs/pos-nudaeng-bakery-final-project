@@ -12,21 +12,6 @@
           </div>
           <hr class="my-3" />
 
-          <!-- Type product -->
-          <!-- <div class="card-type-content" v-b-scrollspy>
-            <v-btn @click="pdType(null)" class="d-flex justify-content-center">
-              <small>all</small>
-            </v-btn>
-            <v-btn
-              v-for="(index, i) in productType"
-              :key="i"
-              @click="pdType(index.id)"
-              class="d-flex justify-content-center"
-            >
-              <small>{{ index.name }}</small>
-            </v-btn>
-          </div> -->
-          <!-- Card body -->
           <div>
             <b-tabs
               content-class="mt-0"
@@ -257,7 +242,7 @@
 
     <!-- modal bill---------------------------------------------------------------------------------------------->
     <b-modal id="modal-scrollable" size="md" hide-footer>
-      <div class="my-5 mx-3">
+      <div class="my-5 mx-3" v-for="(bill, i) in items" :key="i">
         <div class="d-flex justify-content-center">
           <img
             width="180"
@@ -268,22 +253,42 @@
         <div class="text-center mb-3">
           <h6>RECEIPT</h6>
           <p>Nudaeng Bakery</p>
-          <p class="my-2">Tel: 020 98256261</p>
+          <p class="mt-2">Tel: 020 98256261</p>
         </div>
         <div class="py-2">
-          <div class="d-flex flex-row justify-content-between">
+          <div class="d-flex flex-row justify-content-between align-items-end">
             <div>
+              <p>
+                <small><b>ຕິດຕາມ:</b></small>
+              </p>
               <p><small>Instagram: nudaeng_bakery</small></p>
-              <p><small>Facebook: Nudaeng Bakery</small></p>
+              <h6><small>Facebook: Nudaeng Bakery</small></h6>
             </div>
             <div>
-              <p><small>ລະຫັດບິນ: 1</small></p>
-              <p><small>ເວລາ: 8/5/2023, 22:01 </small></p>
+              <p>
+                <small><b>ລະຫັດບິນ: </b>{{ bill.id }}</small>
+              </p>
+              <p>
+                <small
+                  >ວັນທີ:
+                  {{
+                    new Date(bill.created_at).toLocaleString().substring(0, 8)
+                  }}</small
+                >
+              </p>
+              <h6>
+                <small
+                  >ເວລາ:
+                  {{
+                    new Date(bill.created_at).toLocaleString().substring(21, 9)
+                  }}</small
+                >
+              </h6>
             </div>
           </div>
         </div>
         <div>
-          <p>ພະນັກງານຂາຍ: {{ userInfo.firstname }}</p>
+          <p><b>ພະນັກງານຂາຍ: </b>{{ bill.firstname }}</p>
           <hr class="mt-3" />
           <table class="table text-center">
             <thead>
@@ -294,15 +299,15 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td class="text-start">cake</td>
-                <td>2</td>
-                <td>25000 kip/ 1 p</td>
+              <tr v-for="(pro, i) in bill.order_detail" :key="i">
+                <td class="text-start">{{ pro.name }}</td>
+                <td>{{ pro.quantity }}</td>
+                <td>{{ pro.price }} kip/ {{ pro.unit }}</td>
               </tr>
             </tbody>
             <tfoot>
               <tr class="text-start" collapse="3">
-                <td colspan="3"><b>ລາຄາລວມ:</b> ກີບ</td>
+                <td colspan="3"><b>ລາຄາລວມ: </b>{{ bill.price_total }} ກີບ</td>
               </tr>
             </tfoot>
           </table>
@@ -319,6 +324,7 @@
 
 <script>
 // @ is an alias to /src
+import Swal from "sweetalert2";
 import axios from "axios";
 export default {
   name: "HomeView",
@@ -332,6 +338,10 @@ export default {
       menuItems: "",
       cartItems: [],
       userInfo: "",
+
+      items: "",
+      perPage: 3,
+      currentPage: 1,
     };
   },
   mounted() {
@@ -372,6 +382,22 @@ export default {
       })
       .catch((error) => {
         console.error("Error:", error);
+      });
+    //------------------------------------------------------------------------------------------//
+    axios
+      .get("api/allorderwithdetail", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        const newItem = response.data.reverse();
+        this.items = [newItem[0]];
+
+        console.log(items);
+      })
+      .catch((e) => {
+        console.log(e);
       });
     //-----------------------------------------------------------------------------------------//
     this.filterProducts();
@@ -484,10 +510,37 @@ export default {
           }
         )
         .then(({ data }) => {
-          alert("ສັ່ງຊື້ສຳເລັດ");
+          // alert("ສັ່ງຊື້ສຳເລັດ");
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Your work has been saved",
+            showConfirmButton: false,
+            iconColor: "limegreen",
+            width: 600,
+            padding: "3em",
+            timer: 1500,
+          });
           // this.$router.push({ path: "/user" });
-          window.location.reload();
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
           console.log(data);
+        })
+        .catch((error) => {
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "ເກີດຂໍ້ຜິດພາດ!!!",
+            text: "something was wrong!!!",
+            showConfirmButton: true,
+            width: 600,
+            padding: "3em",
+            iconColor: "crimson",
+            confirmButtonText: "ຕົກລົງ",
+            confirmButtonColor: "#1d2186",
+          });
+          console.error("Error:", error);
         });
     },
   },
@@ -495,14 +548,15 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "@/scss/colors";
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;700&display=swap");
+
+//------------------------------------------------------------------------------------------------------------------//
 * {
+  font-family: "Noto Sans Lao", sans-serif;
   padding: 0;
   margin: 0;
   text-decoration: none;
   list-style: none;
-}
-.tab {
-  color: chocolate;
 }
 .home-content {
   background-color: $gray;
@@ -545,6 +599,7 @@ export default {
       height: 100%;
       color: black;
       background: white;
+      // color: crimson;
       border-radius: 10px;
       font-size: 14px;
       // border: 1px solid black;

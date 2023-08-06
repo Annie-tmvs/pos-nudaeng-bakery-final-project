@@ -79,14 +79,25 @@
             </div>
             <div class="detail-content">
               <div class="profile-detail">
+                <p>Id: {{ user.id }} | {{ user.roles }}</p>
                 <h6 class="text-start">
-                  <small> {{ user.firstname }} {{ user.lastname }}</small>
+                  <small>{{ user.firstname }}</small>
                 </h6>
-                <!-- <p>{{ user.roles }}</p> -->
               </div>
               <log-out-form />
             </div>
           </div>
+          <!-- toollip---------------------------------------------------------------------------- -->
+          <!-- <b-tooltip target="tooltip-target" triggers="hover" variant="light">
+            <div class="px-2 text-start">
+              <p>ID: {{ user.id }}</p>
+              <p>Role: {{ user.roles }}</p>
+              <p>Name: {{ user.firstname }} {{ user.lastname }}</p>
+
+              <h6></h6>
+            </div>
+          </b-tooltip> -->
+          <!-- toollip---------------------------------------------------------------------------- -->
         </div>
       </div>
     </nav>
@@ -147,11 +158,11 @@ export default {
       });
   },
   methods: {
-    Logout() {
-      localStorage.clear();
-      window.location.reload();
-      this.$router.push("/");
-    },
+    // Logout() {
+    //   localStorage.clear();
+    //   window.location.reload();
+    //   this.$router.push("/");
+    // },
   },
 };
 </script>
@@ -242,19 +253,20 @@ nav {
 
 .profile-content {
   .profile {
+    height: 100px;
+
     display: flex;
     align-items: center;
     position: absolute;
     bottom: 0;
-    padding: 1rem;
-    height: 60;
+    padding: 0.8rem;
     width: fill;
     background-color: #1a1a1a;
     .profile-image {
       img {
         object-fit: cover;
-        height: 45px;
-        width: 45px;
+        height: 50px;
+        width: 50px;
         border-radius: 12px;
       }
     }
@@ -264,6 +276,12 @@ nav {
       justify-content: space-between;
     }
     .profile-detail {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* number of lines to show */
+      line-clamp: 1;
+      -webkit-box-orient: vertical;
       font-size: 12px;
       margin-left: 10px;
       font-weight: 600;

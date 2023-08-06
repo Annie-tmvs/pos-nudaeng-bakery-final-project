@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 export default {
   data() {
     return {
@@ -42,8 +43,8 @@ export default {
   methods: {
     Logout() {
       localStorage.clear();
-      // window.location.reload();
       this.$router.push("/login");
+      // window.location.reload();
     },
     showModal() {
       this.$root.$emit("bv::show::modal", "modal-1", "#btnShow");

@@ -65,7 +65,7 @@
             <div class="customer-info">
               <div>
                 <p class="mt-1">
-                  User Id: {{ viewItem.user_id }}, <br />
+                  User Id: {{ viewItem.user_id }} <br />
                   Role:
                   {{ viewItem.roles }}
                 </p>
@@ -230,7 +230,7 @@ export default {
   padding: 1rem;
 }
 .table-body {
-  height: 430px;
+  height: 500px;
   overflow: auto;
 }
 .search-bar {
@@ -244,7 +244,7 @@ export default {
     // background-color: $green;
     padding: 0.8rem;
     display: flex;
-    width: 190px;
+    // width: 190px;
     height: fit-content;
     justify-content: center;
     align-items: center;
@@ -259,6 +259,9 @@ export default {
       display: flex;
       align-items: end;
       justify-content: space-between;
+      h6 {
+        text-align: start;
+      }
     }
   }
 }

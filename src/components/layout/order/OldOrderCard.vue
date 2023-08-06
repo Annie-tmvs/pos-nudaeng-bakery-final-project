@@ -59,27 +59,31 @@
             <h6>ລະຫັດບິນ: {{ oldOrderID.id }}</h6>
             <div class="customer-info">
               <div>
-                <p class="mt-1">Order Id: {{ oldOrderID.user_id }}</p>
-                <p>ຊື່ລູກຄ້າ: {{ oldOrderID.firstname }}</p>
-                <p>ເບີໂທ: {{ oldOrderID.tel }}</p>
+                <p class="mt-1">
+                  Order Id: {{ oldOrderID.user_id }}<br />
+                  Role:
+                  {{ oldOrderID.roles }}
+                </p>
+                <h6>ຊື່ລູກຄ້າ: {{ oldOrderID.firstname }}</h6>
+                <h6>ເບີໂທ: {{ oldOrderID.tel }}</h6>
               </div>
               <div>
-                <p>
+                <h6>
                   ວັນທີ:
                   {{
                     new Date(oldOrderID.created_at)
                       .toLocaleString()
                       .substring(0, 8)
                   }}
-                </p>
-                <p>
+                </h6>
+                <h6>
                   ເວລາ:
                   {{
                     new Date(oldOrderID.created_at)
                       .toLocaleString()
                       .substring(21, 9)
                   }}
-                </p>
+                </h6>
               </div>
             </div>
             <hr class="mt-3" />
@@ -115,7 +119,7 @@
                 </div>
               </div>
             </div>
-            <div class="payment">
+            <div class="payment" v-show="oldOrderID.receipt_image != null">
               <h><b>ຕິດຄັດການຊ່ຳລະ</b></h>
               <div class="img-payment">
                 <img
@@ -128,7 +132,7 @@
               </div>
             </div>
             <div class="location-content">
-              <div class="location-des">
+              <div class="location-des" v-show="oldOrderID.location != null">
                 <h><b>ສະຖານທີ່: </b></h>
                 <p class="txt-location">{{ oldOrderID.location }}</p>
               </div>
@@ -274,6 +278,9 @@ body {
     display: flex;
     align-items: end;
     justify-content: space-between;
+    h6 {
+      text-align: start;
+    }
   }
 }
 .pro-table {
