@@ -7,7 +7,7 @@
       </div>
       <v-spacer></v-spacer>
       <h6 class="px-2">
-        <b>{{ moment().format("dddd, D/ MM/ YY, h:mm a") }}</b>
+        <b>{{ moment().format("dddd,  MM/DD/YY, h:mm a") }}</b>
       </h6>
     </div>
     <hr class="my-3" />

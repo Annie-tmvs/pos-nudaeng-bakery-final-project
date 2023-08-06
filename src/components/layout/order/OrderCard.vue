@@ -26,10 +26,10 @@
               <div>{{ item.name }}</div>
             </td>
             <td class="td-cont1">
-              {{ moment(item.created_at).format("DD/MM/YYYY") }}
+              {{ new Date(item.created_at).toLocaleString().substring(0, 8) }}
             </td>
             <td class="td-cont1">
-              {{ moment(item.created_at).format("hh:ss a") }}
+              {{ new Date(item.created_at).toLocaleString().substring(21, 9) }}
             </td>
             <td>
               <i class="fa-solid fa-spinner fa-md p-2 text-warning"></i
@@ -68,9 +68,21 @@
               </div>
               <div>
                 <p>
-                  ວັນທີ: {{ moment(orderID.created_at).format("DD/MM/YYYY") }}
+                  ວັນທີ:
+                  {{
+                    new Date(orderID.created_at)
+                      .toLocaleString()
+                      .substring(0, 8)
+                  }}
                 </p>
-                <p>ເວລາ: {{ moment(orderID.created_at).format("hh:ss a") }}</p>
+                <p>
+                  ເວລາ:
+                  {{
+                    new Date(orderID.created_at)
+                      .toLocaleString()
+                      .substring(21, 9)
+                  }}
+                </p>
               </div>
             </div>
             <hr class="mt-3" />
@@ -81,7 +93,7 @@
                 <table class="table">
                   <thead>
                     <tr>
-                      <th>ລຳດັບ</th>
+                      <th>ລະຫັດ</th>
                       <th>ຊື່ສຶນຄ້າ</th>
                       <th>ຈຳນວນ</th>
                       <th>ລາຄາ/ຫົວໜ່ວຍ</th>
@@ -92,7 +104,7 @@
                       <td>{{ orderDe.id }}</td>
                       <td>{{ orderDe.name }}</td>
                       <td>{{ orderDe.quantity }}</td>
-                      <td>{{ orderDe.price }} kip</td>
+                      <td>{{ orderDe.price }} kip/ {{ orderDe.unit }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -203,7 +215,7 @@ export default {
           },
         })
         .then(({ data }) => {
-          alert("saveddddd");
+          alert("ດຳເນີນການສຳເລັດ");
           // this.$router.push({ path: "/user" });
           window.location.reload();
           console.log(data);

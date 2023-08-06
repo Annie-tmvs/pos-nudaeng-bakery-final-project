@@ -13,14 +13,16 @@
         </div>
         <div class="d-flex flex-direction-row gap-2">
           <div class="card">
+            <!-- <p>{{ moment().format("M/D/yy") }}</p> -->
             <h6>
               ຍອດຂາຍມື້ນີ້:
               <b class="text-warning">
                 {{
                   items.filter(
                     (item) =>
-                      moment(item.created_at).format("L") ==
-                      moment().format("L")
+                      new Date(item.created_at)
+                        .toLocaleString()
+                        .substring(0, 8) == moment().format("M/D/yy")
                   ).length
                 }}</b
               >
@@ -41,8 +43,7 @@
         :search="search"
       >
         <template v-slot:item.created_at="{ item }">
-          {{ moment().format("DD.MM.YYYY") }}
-          {{ item.created_at }}
+          {{ new Date(item.created_at).toLocaleString() }}
         </template>
         <template v-slot:item.action="{ item }">
           <b-button
@@ -56,7 +57,7 @@
     </v-card>
     <!-- Modal -->
     <div v-if="viewItem">
-      <b-modal id="modal-scrollable" size="lg" hide-footer scrollable>
+      <b-modal id="modal-scrollable" size="lg" hide-footer>
         <div class="modal-content">
           <div class="head-content">
             <h4 class="text-center">ລາຍລະອຽດ</h4>
@@ -66,20 +67,27 @@
                 <p class="mt-1">
                   User Id: {{ viewItem.user_id }}, <br />
                   Role:
-                  {{ viewItem.customer.roles }}
+                  {{ viewItem.roles }}
                 </p>
-                <h6>
-                  ຊື່: {{ viewItem.customer.firstname }}
-                  {{ viewItem.customer.lastname }}
-                </h6>
-                <h6>ເບີໂທ: 59863141</h6>
+                <h6>ຊື່: {{ viewItem.firstname }}</h6>
+                <h6>ເບີໂທ: {{ viewItem.tel }}</h6>
               </div>
               <div>
                 <h6>
-                  ວັນທີ: {{ moment(viewItem.created_at).format("DD/MM/YYYY") }}
+                  ວັນທີ:
+                  {{
+                    new Date(viewItem.created_at)
+                      .toLocaleString()
+                      .substring(0, 8)
+                  }}
                 </h6>
                 <h6>
-                  ເວລາ : {{ moment(viewItem.created_at).format("hh:mm a") }}
+                  ເວລາ :
+                  {{
+                    new Date(viewItem.created_at)
+                      .toLocaleString()
+                      .substring(21, 9)
+                  }}
                 </h6>
               </div>
             </div>
@@ -90,23 +98,52 @@
                 <table class="table">
                   <thead>
                     <tr>
-                      <th>ຊື່ສິນຄ້າ</th>
+                      <th>ລະຫັດ</th>
+                      <th>ຊື່ສຶນຄ້າ</th>
                       <th>ຈຳນວນ</th>
-                      <th>ລາຄາ</th>
+                      <th>ລາຄາ/ຫົວໜ່ວຍ</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>ເຄັກຊ໊ອກໂກ້ແລັດ</td>
-                      <td>1</td>
-                      <td>75000 kip</td>
+                    <tr v-for="(history, i) in viewItem.order_detail" :key="i">
+                      <td>{{ history.id }}</td>
+                      <td>{{ history.name }}</td>
+                      <td>{{ history.quantity }}</td>
+                      <td>{{ history.price }} kip/ {{ history.unit }}</td>
                     </tr>
                   </tbody>
                 </table>
                 <div class="total-content">
                   <p>
-                    <b>ລາຄາລວມ: </b><span class="text-warning">75000</span> kip
+                    <b>ລາຄາລວມ: </b
+                    ><span class="text-danger">
+                      {{ viewItem.price_total }}</span
+                    >
+                    kip
                   </p>
+                </div>
+                <hr class="mt-3" />
+                <div class="payment" v-show="viewItem.receipt_image !== null">
+                  <h><b>ຕິດຄັດການຊ່ຳລະ</b></h>
+                  <div class="img-payment">
+                    <img
+                      width="300"
+                      alt="image"
+                      :src="
+                        'http://127.0.0.1:8000/storage/' +
+                        viewItem.receipt_image
+                      "
+                    />
+                  </div>
+                </div>
+                <div
+                  class="location-content"
+                  v-show="viewItem.location !== null"
+                >
+                  <div class="location-des">
+                    <h><b>ສະຖານທີ່: </b></h>
+                    <p class="txt-location">{{ viewItem.location }}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -120,6 +157,7 @@
 <script>
 import axios from "axios";
 import moment from "moment";
+import dayjs from "dayjs";
 export default {
   data() {
     return {
@@ -136,9 +174,8 @@ export default {
           value: "id",
         },
         { text: "ລະຫັດພະນັກງານ", value: "user_id" },
+        { text: "role", value: "roles" },
         { text: "ເວລາ", value: "created_at" },
-        // { text: "ວັນທີ", value: "created_at" },
-
         { text: "ລາຄາລວມ", value: "price_total" },
         // { text: "ຊຳລະ", value: "receipt_image" },
         { text: "action", value: "action" },
@@ -148,7 +185,7 @@ export default {
   mounted() {
     const token = localStorage.getItem("token");
     axios
-      .get("api/order", {
+      .get("api/allorderwithdetail", {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -165,17 +202,15 @@ export default {
     moment: function () {
       return moment();
     },
-    format_date(value) {
-      if (value) {
-        return moment(String(value)).format("L");
-      }
+    dayjs: function () {
+      return dayjs();
     },
     //------------------------------------------------------------------------------//
     historyById(item) {
       console.log("history:" + item);
       const token = localStorage.getItem("token");
       axios
-        .get("api/order/" + item, {
+        .get("api/getOrderById/" + item, {
           headers: {
             Authorization: "Bearer " + token,
           },
@@ -184,11 +219,6 @@ export default {
           this.viewItem = res.data;
           console.log(viewItem);
         });
-    },
-  },
-  computed: {
-    formattedDate() {
-      return moment(this.originalDate).format("YYYY-MM-DD");
     },
   },
 };

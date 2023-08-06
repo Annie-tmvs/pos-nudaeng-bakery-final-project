@@ -8,63 +8,145 @@
               <h2>ໜ້າເມນູ</h2>
               <small>Home</small>
             </div>
+            <div></div>
           </div>
           <hr class="my-3" />
 
           <!-- Type product -->
-          <div class="card-type-content" v-b-scrollspy>
-            <div class="card card-type">
-              <router-link to="" tag="a" @click="showAllItems()"
-                >ທັງໝົດ</router-link
-              >
-            </div>
-            <div
-              class="card card-type"
+          <!-- <div class="card-type-content" v-b-scrollspy>
+            <v-btn @click="pdType(null)" class="d-flex justify-content-center">
+              <small>all</small>
+            </v-btn>
+            <v-btn
               v-for="(index, i) in productType"
               :key="i"
+              @click="pdType(index.id)"
+              class="d-flex justify-content-center"
             >
-              <router-link to="" tag="a" @click="pdType(index.id)">{{
-                index.name
-              }}</router-link>
-            </div>
-          </div>
-
+              <small>{{ index.name }}</small>
+            </v-btn>
+          </div> -->
           <!-- Card body -->
-          <div class="wrapper">
-            <div
-              class="card card-menu"
-              v-for="(item, i) in product"
-              :key="i.id"
+          <div>
+            <b-tabs
+              content-class="mt-0"
+              justified
+              nav-class="bg-secondary "
+              active-nav-item-class="font-weight-bold text-uppercase bg-dark text-white "
             >
-              <div>
-                <div class="img">
-                  <img
-                    class="img-body"
-                    :src="'http://127.0.0.1:8000/storage/' + item.img"
-                    alt="image"
-                  />
+              <b-tab title="All" active title-link-class="text-white">
+                <div class="wrapper">
+                  <div
+                    class="card card-menu"
+                    v-for="(item, i) in product"
+                    :key="i.id"
+                  >
+                    <div>
+                      <div class="img">
+                        <img
+                          class="img-body"
+                          :src="'http://127.0.0.1:8000/storage/' + item.img"
+                          alt="image"
+                        />
+                      </div>
+                      <div class="card-text">
+                        <label
+                          ><b style="color: black"> {{ item.name }}</b></label
+                        >
+                        <label
+                          >stock:<b style="color: rgb(242, 210, 51)">
+                            {{ item.quantity }}</b
+                          ></label
+                        >
+                        <label
+                          >ລາຄາ:
+                          <span style="color: black"
+                            >{{ item.price }}/ {{ item.unit }}</span
+                          ></label
+                        >
+                      </div>
+                      <button
+                        style="font-weight: bold"
+                        @click="addItemToCart(item)"
+                        v-if="item.quantity != 0"
+                      >
+                        <Span>Add to Cart</Span>
+                      </button>
+                      <div
+                        v-else
+                        style="
+                          widht: fill;
+                          background-color: rgb(230, 14, 14);
+                          color: white;
+                          border-radius: 5px;
+                        "
+                      >
+                        <small>OUT OF STROCK</small>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="card-text">
-                  <label
-                    ><b style="color: black"> {{ item.name }}</b></label
+              </b-tab>
+              <b-tab
+                @click="pdType(index.id)"
+                v-for="(index, i) in productType"
+                :key="i"
+                :title="index.name"
+                title-link-class="text-white"
+              >
+                <div class="wrapper">
+                  <div
+                    class="card card-menu"
+                    v-for="(item, i) in productID.product"
+                    :key="i.id"
                   >
-                  <label
-                    >stock:<b style="color: rgb(242, 210, 51)">
-                      {{ item.quantity }}</b
-                    ></label
-                  >
-                  <label
-                    >ລາຄາ:
-                    <span style="color: black"
-                      >{{ item.price }}/ {{ item.unit }}</span
-                    ></label
-                  >
+                    <div>
+                      <div class="img">
+                        <img
+                          class="img-body"
+                          :src="'http://127.0.0.1:8000/storage/' + item.img"
+                          alt="image"
+                        />
+                      </div>
+                      <div class="card-text">
+                        <label
+                          ><b style="color: black"> {{ item.name }}</b></label
+                        >
+                        <label
+                          >stock:<b style="color: rgb(242, 210, 51)">
+                            {{ item.quantity }}</b
+                          ></label
+                        >
+                        <label
+                          >ລາຄາ:
+                          <span style="color: black"
+                            >{{ item.price }}/ {{ item.unit }}</span
+                          ></label
+                        >
+                      </div>
+                      <button
+                        style="font-weight: bold"
+                        @click="addItemToCart(item)"
+                        v-if="item.quantity != 0"
+                      >
+                        <Span>Add to Cart</Span>
+                      </button>
+                      <div
+                        v-else
+                        style="
+                          widht: fill;
+                          background-color: rgb(230, 14, 14);
+                          color: white;
+                          border-radius: 5px;
+                        "
+                      >
+                        <small>OUT OF STROCK</small>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <button @click="addItemToCart(item)">
-                  <Span>Add to Cart</Span>
-                </button>
-              </div>
-            </div>
+              </b-tab>
+            </b-tabs>
           </div>
         </div>
       </b-col>
@@ -75,23 +157,22 @@
           <h4>ລາຍການຊື້</h4>
           <small> order list </small>
           <div
-            class="d-flex flex-direction-row justify-content-end gap-3 my-3 px-2"
+            class="d-flex flex-direction-row justify-content-end gap-4 my-3 px-2"
           >
             <div>
               <small> {{ cartItems.length }} in cart</small>
             </div>
             <v-spacer></v-spacer>
-            <button @click="deleteAllItem()">
-              <small>
-                <i class="fa-solid fa-trash-can fa-sm"></i> Clear all</small
-              >
+            <button v-b-modal.modal-scrollable>
+              <small> <i class="fa-solid fa-print fa-sm"></i> print</small>
             </button>
-            <!-- <button>
-              <small> <i class="fa-solid fa-print fa-sm"></i> Print</small>
-            </button> -->
+            <button @click="deleteAllItem()">
+              <small> <i class="fa-solid fa-trash-can fa-sm"></i> Clear</small>
+            </button>
           </div>
+          <hr class="my-3" />
           <!-- <hr class="my-3 "/> -->
-          <div class="order-list">
+          <div v-if="cartItems.length != 0" class="order-list">
             <div
               class="card card-order"
               v-for="(item, i) in cartItems"
@@ -135,36 +216,104 @@
               </div>
             </div>
           </div>
-
+          <div
+            class="order-list d-flex flex-column justify-content-center align-items-center"
+            v-else
+          >
+            <img
+              width="150"
+              alt="image"
+              src="https://media.discordapp.net/attachments/905843816697835591/1137442038946734091/empty-cart.png?width=640&height=640"
+            />
+            <h5
+              class="mt-2"
+              style="color: rgb(211, 211, 211); font-weight: 700"
+            >
+              No product
+            </h5>
+          </div>
           <!-- total-card -->
           <div class="total-content">
             <div class="total-card">
-              <h5><b>ລວມ</b></h5>
-              <hr />
-              <!-- <div class="row">
-                    <div>
-                      <h>ຈຳນວນ :</h>
-                    </div>
-                    <div>
-                      <p>{{ cartTotalQuantity }}</p>
-                    </div>
-                  </div> -->
               <div class="row">
                 <div>
-                  <h>ລາຄາລວມ :</h>
+                  <h5><b>ລາຄາລວມ:</b></h5>
                 </div>
                 <div class="text-end">
-                  <p>{{ calculateTotalPrice() }} Kip</p>
+                  <p>
+                    <b>{{ calculateTotalPrice() }} Kip</b>
+                  </p>
                 </div>
               </div>
             </div>
-            <div @click="deleteAllItem()" class="btn-pay">
-              <div type="button">ຊຳລະເງີນ</div>
+            <hr />
+            <div class="btn-pay">
+              <div type="button" @click="submitOrder">ຊຳລະເງີນ</div>
             </div>
           </div>
         </div>
       </b-col>
     </b-row>
+
+    <!-- modal bill---------------------------------------------------------------------------------------------->
+    <b-modal id="modal-scrollable" size="md" hide-footer>
+      <div class="my-5 mx-3">
+        <div class="d-flex justify-content-center">
+          <img
+            width="180"
+            alt="image"
+            src="https://media.discordapp.net/attachments/905843816697835591/1117780591329431563/IMG_1434.png?width=625&height=625"
+          />
+        </div>
+        <div class="text-center mb-3">
+          <h6>RECEIPT</h6>
+          <p>Nudaeng Bakery</p>
+          <p class="my-2">Tel: 020 98256261</p>
+        </div>
+        <div class="py-2">
+          <div class="d-flex flex-row justify-content-between">
+            <div>
+              <p><small>Instagram: nudaeng_bakery</small></p>
+              <p><small>Facebook: Nudaeng Bakery</small></p>
+            </div>
+            <div>
+              <p><small>ລະຫັດບິນ: 1</small></p>
+              <p><small>ເວລາ: 8/5/2023, 22:01 </small></p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p>ພະນັກງານຂາຍ: {{ userInfo.firstname }}</p>
+          <hr class="mt-3" />
+          <table class="table text-center">
+            <thead>
+              <tr>
+                <th class="text-start">ຊື່ສຶນຄ້າ</th>
+                <th>ຈຳນວນ</th>
+                <th>ລາຄາ/ຫົວໜ່ວຍ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-start">cake</td>
+                <td>2</td>
+                <td>25000 kip/ 1 p</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="text-start" collapse="3">
+                <td colspan="3"><b>ລາຄາລວມ:</b> ກີບ</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end">
+        <button style="width: 100px; height: 50px">
+          <i class="fa-solid fa-print"></i> print
+        </button>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -179,13 +328,26 @@ export default {
       filteredProducts: "",
       productType: "",
       product: "",
-      cartItems: [],
+      productID: "",
       menuItems: "",
-      login: { phone_number: "", password: "" },
+      cartItems: [],
+      userInfo: "",
     };
   },
   mounted() {
     const token = localStorage.getItem("token");
+    const id = localStorage.getItem("id");
+    axios
+      .get("api/users/selOne/" + id, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        this.userInfo = response.data;
+        console.log("userInfo");
+      });
+    //--------------------------------------------------------------------------------------//
     axios
       .get("api/product_type", {
         headers: {
@@ -198,7 +360,7 @@ export default {
       .catch((error) => {
         console.error("Error:", error);
       });
-
+    //---------------------------------------------------------------------------------------//
     axios
       .get("api/product", {
         headers: {
@@ -211,11 +373,10 @@ export default {
       .catch((error) => {
         console.error("Error:", error);
       });
-
+    //-----------------------------------------------------------------------------------------//
     this.filterProducts();
   },
-
-  //-------------------------------------------------------------------------------//
+  //---------------------------------------------------------------------------------------//
   methods: {
     addItemToCart(item) {
       console.log(item);
@@ -234,7 +395,6 @@ export default {
         );
       }
     },
-
     //-------------------------------------------------------------------------------//
     decrementQuantity(item) {
       const newCounter = item.counter - 1; // Increment the counter
@@ -246,10 +406,9 @@ export default {
         );
       }
     },
-
     incrementQuantity(item) {
       const newCounter = item.counter + 1; // Increment the counter
-      if (newCounter <= item.quantity) {
+      if (newCounter < item.quantity) {
         this.cartItems = this.cartItems.map((cartItem) =>
           cartItem.id === item.id
             ? { ...cartItem, counter: newCounter }
@@ -257,7 +416,6 @@ export default {
         );
       }
     },
-
     deleteItem(item) {
       this.cartItems.splice(this.cartItems.indexOf(item));
     },
@@ -272,43 +430,22 @@ export default {
       }
       return totalPrice;
     },
-    //-------------------------------------------------------------------------------//
-    showAllItems() {
+    //--------------------------------------------------------------------------------//
+    pdType(item) {
       const token = localStorage.getItem("token");
       axios
-        .get("api/product", {
+        .get("api/product_type/" + item, {
           headers: {
             Authorization: "Bearer " + token,
           },
         })
         .then((response) => {
-          this.menuItems = response.data;
+          this.productID = response.data;
         })
         .catch((error) => {
           console.error("Error:", error);
         });
     },
-    //--------------------------------------------------------------------------------//
-    // pdType(id) {
-    //   const token = localStorage.getItem("token");
-    //   console.log("product type: " + id);
-
-    //   axios
-    //     .get("api/product", {
-    //       headers: {
-    //         Authorization: "Bearer " + token,
-    //       },
-    //     })
-    //     .then((response) => {
-    //       const filteredItems = response.data.filter(
-    //         (item) => item.product_type_id === id
-    //       );
-    //       this.menuItems = filteredItems;
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error:", error);
-    //     });
-    // },
     //------------------------------------------------------------------------------------------------------------------------------------//
     saveOrder(event) {
       event.preventDefault();
@@ -323,6 +460,36 @@ export default {
         },
       });
     },
+    //------------------------------------------------------------------------------------//
+    submitOrder() {
+      console.log("submit order");
+      const token = localStorage.getItem("token");
+      axios
+        .post(
+          "api/order",
+          {
+            tel: this.userInfo.phone_number,
+            location: "ໜ້າຮ້ານ",
+            price_total: this.calculateTotalPrice(),
+            order_details: this.cartItems.map((item) => ({
+              ...item,
+              product_id: item.id,
+              quantity: item.counter,
+            })),
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        )
+        .then(({ data }) => {
+          alert("ສັ່ງຊື້ສຳເລັດ");
+          // this.$router.push({ path: "/user" });
+          window.location.reload();
+          console.log(data);
+        });
+    },
   },
 };
 </script>
@@ -333,6 +500,9 @@ export default {
   margin: 0;
   text-decoration: none;
   list-style: none;
+}
+.tab {
+  color: chocolate;
 }
 .home-content {
   background-color: $gray;
@@ -361,9 +531,10 @@ export default {
   .card-type {
     width: 100px;
     height: 45px;
+    text-align: center;
     align-items: center;
     flex-direction: column;
-    justify-items: center;
+    justify-content: center;
     border-radius: 10px;
     a {
       cursor: pointer;
@@ -404,8 +575,10 @@ export default {
   gap: 1rem;
   margin-top: 1.5rem;
   overflow: auto;
-  height: 440px;
+  // background-color: cadetblue;
+  height: 580px;
   .card-menu {
+    overflow: hidden;
     display: flex;
     max-width: 175px;
     height: 260px;
@@ -514,6 +687,7 @@ input:focus {
 
 //total content
 .total-content {
+  height: 170px;
   display: flex;
   position: absolute;
   bottom: 0;
@@ -549,7 +723,7 @@ input:focus {
     color: white;
     background-color: black;
     border-radius: 10px;
-    height: 45px;
+    height: 50px;
     align-items: center;
     justify-content: center;
   }

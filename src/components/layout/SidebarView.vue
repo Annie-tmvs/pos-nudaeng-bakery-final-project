@@ -173,9 +173,8 @@ export default {
   height: 30px;
   color: white;
   background-color: rgb(219, 20, 20);
-  border-radius: 25px;
-  font-size: 16px;
-  font-weight: bold;
+  border-radius: 10px;
+  font-size: 14px;
 }
 nav {
   position: relative;
