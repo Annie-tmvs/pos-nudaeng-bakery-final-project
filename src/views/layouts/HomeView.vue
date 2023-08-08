@@ -15,9 +15,11 @@
           <div>
             <b-tabs
               content-class="mt-0"
+              pills
+              card
               justified
-              nav-class="bg-secondary "
-              active-nav-item-class="font-weight-bold text-uppercase bg-dark text-white "
+              nav-class="bg-secondary align-items-center rounded"
+              active-nav-item-class="font-weight-bold text-uppercase bg-dark text-white py-3 rounded"
             >
               <b-tab title="All" active title-link-class="text-white">
                 <div class="wrapper">
@@ -43,13 +45,22 @@
                             {{ item.quantity }}</b
                           ></label
                         >
+                        <small
+                          >ຫົວໜ່ວຍ:
+                          <span style="color: black">{{
+                            item.unit
+                          }}</span></small
+                        >
                         <label
                           >ລາຄາ:
                           <span style="color: black"
-                            >{{ item.price }}/ {{ item.unit }}</span
+                            >{{ item.price }} ກີບ</span
                           ></label
                         >
                       </div>
+                      <!-- <p v-show="item.id == alreadyInCart" class="text-success">
+                        already in cart
+                      </p> -->
                       <button
                         style="font-weight: bold"
                         @click="addItemToCart(item)"
@@ -102,10 +113,16 @@
                             {{ item.quantity }}</b
                           ></label
                         >
+                        <small
+                          >ຫົວໜ່ວຍ:
+                          <span style="color: black">{{
+                            item.unit
+                          }}</span></small
+                        >
                         <label
                           >ລາຄາ:
                           <span style="color: black"
-                            >{{ item.price }}/ {{ item.unit }}</span
+                            >{{ item.price }} ກີບ</span
                           ></label
                         >
                       </div>
@@ -148,7 +165,7 @@
               <small> {{ cartItems.length }} in cart</small>
             </div>
             <v-spacer></v-spacer>
-            <button v-b-modal.modal-scrollable>
+            <button v-show="items != null" v-b-modal.modal-scrollable>
               <small> <i class="fa-solid fa-print fa-sm"></i> print</small>
             </button>
             <button @click="deleteAllItem()">
@@ -242,83 +259,100 @@
 
     <!-- modal bill---------------------------------------------------------------------------------------------->
     <b-modal id="modal-scrollable" size="md" hide-footer>
-      <div
-        id="pdfRef"
-        class="my-5 bill-content"
-        style="padding: 0, 1rem"
-        v-for="(bill, i) in items"
-        :key="i"
-      >
-        <div class="d-flex justify-content-center">
-          <img width="180" alt="image" src="../../assets/nudaeng.png" />
-        </div>
-        <div class="text-center mb-3">
-          <h6>RECEIPT</h6>
-          <p>Nudaeng Bakery</p>
-          <p class="mt-2">Tel: 020 98256261</p>
-        </div>
-        <div class="py-2">
-          <div class="d-flex flex-row justify-content-between align-items-end">
-            <div>
-              <p>
-                <small><b>ຕິດຕາມ:</b></small>
-              </p>
-              <p><small>Instagram: nudaeng_bakery</small></p>
-              <h6><small>Facebook: Nudaeng Bakery</small></h6>
+      <!-- {{ items }} -->
+      <div v-for="(bill, i) in items" :key="i">
+        <div
+          v-if="
+            bill.roles == 'Owner' ||
+            bill.roles == 'OWNER' ||
+            bill.roles == 'Admin' ||
+            bill.roles == 'ADMIN' ||
+            bill.roles == 'Employee' ||
+            bill.roles == 'EMPLOYEE'
+          "
+        >
+          <div id="pdfRef" class="my-5 bill-content" style="padding: 0, 1rem">
+            <div class="d-flex justify-content-center">
+              <img width="180" alt="image" src="../../assets/nudaeng.png" />
+            </div>
+            <div class="text-center mb-3">
+              <h6>RECEIPT</h6>
+              <p>Nudaeng Bakery</p>
+              <p class="mt-2">Tel: 020 98256261</p>
+            </div>
+            <div class="py-2">
+              <div
+                class="d-flex flex-row justify-content-between align-items-end"
+              >
+                <div>
+                  <p>
+                    <small><b>ຕິດຕາມ:</b></small>
+                  </p>
+                  <p><small>Instagram: nudaeng_bakery</small></p>
+                  <h6><small>Facebook: Nudaeng Bakery</small></h6>
+                </div>
+                <div>
+                  <p>
+                    <small><b>ລະຫັດບິນ: </b>{{ bill.id }}</small>
+                  </p>
+                  <p>
+                    <small
+                      >ວັນທີ:
+                      {{
+                        new Date(bill.created_at)
+                          .toLocaleString()
+                          .substring(0, 8)
+                      }}</small
+                    >
+                  </p>
+                  <h6>
+                    <small
+                      >ເວລາ:
+                      {{
+                        new Date(bill.created_at)
+                          .toLocaleString()
+                          .substring(21, 9)
+                      }}</small
+                    >
+                  </h6>
+                </div>
+              </div>
             </div>
             <div>
-              <p>
-                <small><b>ລະຫັດບິນ: </b>{{ bill.id }}</small>
-              </p>
-              <p>
-                <small
-                  >ວັນທີ:
-                  {{
-                    new Date(bill.created_at).toLocaleString().substring(0, 8)
-                  }}</small
-                >
-              </p>
-              <h6>
-                <small
-                  >ເວລາ:
-                  {{
-                    new Date(bill.created_at).toLocaleString().substring(21, 9)
-                  }}</small
-                >
-              </h6>
+              <p><b>ພະນັກງານຂາຍ: </b>{{ bill.firstname }}</p>
+              <hr class="mt-3" />
+              <table class="table text-center">
+                <thead>
+                  <tr>
+                    <th class="text-start">ຊື່ສຶນຄ້າ</th>
+                    <th>ຈຳນວນ</th>
+                    <th>ລາຄາ/ຫົວໜ່ວຍ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(pro, i) in bill.order_detail" :key="i">
+                    <td class="text-start">{{ pro.name }}</td>
+                    <td>{{ pro.quantity }}</td>
+                    <td>{{ pro.price }} kip/ {{ pro.unit }}</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr class="text-start" collapse="3">
+                    <td colspan="3">
+                      <b>ລາຄາລວມ: </b>{{ bill.price_total }} ກີບ
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           </div>
-        </div>
-        <div>
-          <p><b>ພະນັກງານຂາຍ: </b>{{ bill.firstname }}</p>
+          <div class="d-flex justify-content-end">
+            <button @click="exportPDF" style="width: 100px; height: 50px">
+              <i class="fa-solid fa-print"></i> print
+            </button>
+          </div>
           <hr class="mt-3" />
-          <table class="table text-center">
-            <thead>
-              <tr>
-                <th class="text-start">ຊື່ສຶນຄ້າ</th>
-                <th>ຈຳນວນ</th>
-                <th>ລາຄາ/ຫົວໜ່ວຍ</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(pro, i) in bill.order_detail" :key="i">
-                <td class="text-start">{{ pro.name }}</td>
-                <td>{{ pro.quantity }}</td>
-                <td>{{ pro.price }} kip/ {{ pro.unit }}</td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr class="text-start" collapse="3">
-                <td colspan="3"><b>ລາຄາລວມ: </b>{{ bill.price_total }} ກີບ</td>
-              </tr>
-            </tfoot>
-          </table>
         </div>
-      </div>
-      <div class="d-flex justify-content-end">
-        <button @click="exportPDF" style="width: 100px; height: 50px">
-          <i class="fa-solid fa-print"></i> print
-        </button>
       </div>
     </b-modal>
   </div>
@@ -347,6 +381,7 @@ export default {
       items: "",
       perPage: 3,
       currentPage: 1,
+      alreadyInCart: [],
     };
   },
   mounted() {
@@ -397,13 +432,15 @@ export default {
       })
       .then((response) => {
         const newItem = response.data.reverse();
-        this.items = [newItem[0]];
+        console.log("roles allow ===>" + newItem);
 
-        console.log(items);
+        this.items = newItem;
+        console.log(this.items);
       })
       .catch((e) => {
         console.log(e);
       });
+
     //-----------------------------------------------------------------------------------------//
     this.filterProducts();
   },
@@ -411,14 +448,14 @@ export default {
   methods: {
     addItemToCart(item) {
       console.log(item);
-
+      // this.alreadyInCart = item.id;
       // Check if the item already exists in the cart
       const existingItem = this.cartItems.find(
         (cartItem) => cartItem.id === item.id
       );
       if (!existingItem) {
         this.cartItems.push({ ...item, counter: 1 });
-      } else {
+      } else if (existingItem < item.quantity) {
         // If the item already exists in the cart, increment the counter
         existingItem.counter += 1;
         console.log(
@@ -439,7 +476,7 @@ export default {
     },
     incrementQuantity(item) {
       const newCounter = item.counter + 1; // Increment the counter
-      if (newCounter < item.quantity) {
+      if (newCounter <= item.quantity) {
         this.cartItems = this.cartItems.map((cartItem) =>
           cartItem.id === item.id
             ? { ...cartItem, counter: newCounter }
@@ -505,6 +542,7 @@ export default {
             tel: this.userInfo.phone_number,
             status: 1,
             location: "ໜ້າຮ້ານ",
+            status: 1,
             price_total: this.calculateTotalPrice(),
             order_details: this.cartItems.map((item) => ({
               ...item,
@@ -523,7 +561,8 @@ export default {
           Swal.fire({
             position: "center",
             icon: "success",
-            title: "Your work has been saved",
+            title: "ການຂາຍສຳເລັດ !",
+            text: "Successful !",
             showConfirmButton: false,
             iconColor: "limegreen",
             width: 600,
@@ -680,15 +719,15 @@ export default {
   // align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 1.5rem;
+  margin-top: 1.2rem;
   overflow: auto;
   // background-color: cadetblue;
-  height: 580px;
+  height: 570px;
   .card-menu {
     overflow: hidden;
     display: flex;
-    max-width: 175px;
-    height: 260px;
+    max-width: 190px;
+    height: 300px;
     div {
       padding: 12px;
       color: #1471cf;
@@ -712,6 +751,7 @@ export default {
         }
       }
       button {
+        margin-top: 5px;
         color: chocolate;
       }
     }

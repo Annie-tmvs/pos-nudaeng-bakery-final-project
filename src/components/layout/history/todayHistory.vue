@@ -29,17 +29,17 @@
               ສິນຄ້າ
             </h6>
           </div>
-          <div class="card">
+          <!-- <div class="card">
             <h6>
               ຍອດຂາຍທັງໝົດ: <b class="text-info"> {{ items.length }}</b> ສິນຄ້າ
             </h6>
-          </div>
+          </div> -->
         </div>
       </v-card-title>
       <v-data-table
         class="table-body"
         :headers="headers"
-        :items="items"
+        :items="todayItem"
         :search="search"
       >
         <template v-slot:item.created_at="{ item }">
@@ -166,6 +166,7 @@ export default {
       historyDetail: [],
       viewItem: null,
       items: [],
+      todayItem: [],
       headers: [
         {
           text: "ເລກບິນ",
@@ -192,6 +193,11 @@ export default {
       })
       .then((response) => {
         this.items = response.data.reverse();
+        this.todayItem = response.data.filter(
+          (item) =>
+            new Date(item.created_at).toLocaleString().substring(0, 8) ==
+            moment().format("M/D/yy")
+        );
         console.log(items);
       })
       .catch((e) => {

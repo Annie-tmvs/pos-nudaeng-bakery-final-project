@@ -5,11 +5,13 @@ import HomeView from '../views/layouts/HomeView.vue'
 Vue.use(VueRouter)
 
 const routes = [
+ 
   {
     path: '/login',
     name: 'login',
     component: () => import('../views/Auth/Login.vue'), 
   },
+ 
   {
     path: '/',
     name: 'home',
@@ -35,29 +37,27 @@ const routes = [
     }
   },
   {
-    path: '/type-product',
-    name: 'type-product',
-    component: () => import('../views/layouts/ProductTypeView.vue'),
-    meta: {
-      requiresAuth: true // this route requires authentication
-    }
+    path: '*',
+    name: 'NotFound',
+    component: () => import('../views/layouts/NotFound.vue'),
+
   },
-  {
-    path: '/product-manage',
-    name: 'produt-manage',
-    component: () => import('../views/layouts/ProductView.vue'),
-    meta: {
-      requiresAuth: true // this route requires authentication
-    }
-  },
-  {
-    path: '/ingredient-manage',
-    name: 'ingredient-manage',
-    component: () => import('../views/layouts/IngredientView.vue'),
-    meta: {
-      requiresAuth: true // this route requires authentication
-    }
-  },
+  // {
+  //   path: '/product-manage',
+  //   name: 'produt-manage',
+  //   component: () => import('../views/layouts/ProductView.vue'),
+  //   meta: {
+  //     requiresAuth: true // this route requires authentication
+  //   }
+  // },
+  // {
+  //   path: '/ingredient-manage',
+  //   name: 'ingredient-manage',
+  //   component: () => import('../views/layouts/IngredientView.vue'),
+  //   meta: {
+  //     requiresAuth: true // this route requires authentication
+  //   }
+  // },
   // {
     // path: '/test',
     // name: 'test',
@@ -66,7 +66,6 @@ const routes = [
     //   requiresAuth: true // this route requires authentication
     // }
   // },
-
 ]
 
 

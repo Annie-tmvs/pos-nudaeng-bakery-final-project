@@ -1,7 +1,44 @@
 <template>
   <div>
     <div class="card-content">
-      <table class="table">
+      <v-card class="card-cont">
+        <v-card-title class="search-bar">
+          <div class="search">
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+          </div>
+        </v-card-title>
+        <v-data-table
+          class="table-body"
+          :headers="headers"
+          :items="items"
+          :search="search"
+        >
+          <template v-slot:item.created_at="{ item }">
+            {{ new Date(item.created_at).toLocaleString() }}
+          </template>
+          <template v-slot:item.status="{ item }">
+            <i
+              class="fa-solid fa-triangle-exclamation fa-md p-2 text-danger"
+            ></i
+            ><span>ແຈ້ງບັນຫາ</span>
+          </template>
+          <template v-slot:item.action="{ item }">
+            <div tag="btn" v-b-modal.modal3 @click="orderById(item.id)">
+              <p style="color: #1d2186">
+                <i class="fa-solid fa-truck-ramp-box fa-sm p-2"></i>
+                ດຳເນີນການ
+              </p>
+            </div>
+          </template>
+        </v-data-table>
+      </v-card>
+      <!-- <table class="table">
         <thead>
           <tr>
             <th class="th-cont1" style="border-radius: 10px 0 0 10px"></th>
@@ -14,7 +51,7 @@
           </tr>
         </thead>
         <tbody v-for="(item, i) in items" :key="i.id" :item="item">
-          <tr v-show="item.status == 0">
+          <tr v-show="item.status == 2">
             <td class="td-cont1"></td>
             <td>
               {{ item.id }}
@@ -32,8 +69,10 @@
               {{ new Date(item.created_at).toLocaleString().substring(21, 9) }}
             </td>
             <td>
-              <i class="fa-solid fa-spinner fa-md p-2 text-warning"></i
-              ><span>ກຳລັງລໍຖ້າດຳເນີນການ</span>
+              <i
+                class="fa-solid fa-triangle-exclamation fa-md p-2 text-danger"
+              ></i
+              ><span>ແຈ້ງບັນຫາ</span>
             </td>
             <td class="btn-content">
               <div
@@ -50,12 +89,12 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
     </div>
     <!-- Modal -->
 
     <div v-if="orderID">
-      <b-modal id="modal1" hide-header hide-footer hide-header-close size="lg">
+      <b-modal id="modal3" hide-header hide-footer hide-header-close size="lg">
         <div class="modal-content">
           <div class="head-content">
             <h4>ລາຍລະອຽດ</h4>
@@ -139,12 +178,12 @@
               <div class="button-content">
                 <div
                   typ="btn"
-                  class="text-decoration-underline text-primary"
+                  class="text-decoration-underline text-danger"
                   style="cursor: pointer"
-                  @click="reportOrder(orderID)"
+                  @click="cancelOrder(orderID)"
                 >
                   <label class="text-dark">Click: </label>
-                  ແຈ້ງລາຍການມີບັນຫາ
+                  ລຶບລາຍການ
                 </div>
                 <v-spacer></v-spacer>
                 <div
@@ -154,7 +193,7 @@
                 >
                   ຢືນຢັນ
                 </div>
-                <div typ="btn" class="btn btn-danger" @click="hideModal1">
+                <div typ="btn" class="btn btn-danger" @click="hideModal">
                   ຍົກເລີກ
                 </div>
               </div>
@@ -174,10 +213,25 @@ export default {
   components: {},
   data() {
     return {
+      search: "",
       items: [],
-      orderID: null,
+      orderID: [],
       status: 1,
       statusError: 2,
+      headers: [
+        {
+          text: "ເລກບິນ",
+          align: "start",
+          sortable: false,
+          value: "id",
+        },
+        { text: "ລູກຄ້າ", value: "user_id" },
+        { text: "ເວລາ", value: "created_at" },
+        // { text: "role", value: "roles" },
+        { text: "ສະຖານະ", value: "status" },
+        // { text: "ຊຳລະ", value: "receipt_image" },
+        { text: "action", value: "action" },
+      ],
     };
   },
   mounted() {
@@ -189,7 +243,8 @@ export default {
         },
       })
       .then((res) => {
-        this.items = res.data.reverse();
+        const filterItem = res.data.filter((item) => item.status == 2);
+        this.items = filterItem.reverse();
         console.log(items);
       });
   },
@@ -197,8 +252,8 @@ export default {
     moment: function () {
       return moment();
     },
-    hideModal1() {
-      this.$root.$emit("bv::hide::modal", "modal1", "#btnShow");
+    hideModal() {
+      this.$root.$emit("bv::hide::modal", "modal3", "#btnShow");
     },
     orderById(item) {
       console.log("current order:" + item);
@@ -234,8 +289,7 @@ export default {
           Swal.fire({
             position: "center",
             icon: "success",
-            title: "ສຳເລັດ",
-            text: "successful",
+            title: "Your work has been saved",
             showConfirmButton: false,
             iconColor: "limegreen",
             width: 600,
@@ -249,39 +303,49 @@ export default {
           console.log(data);
         });
     },
-    reportOrder(orderID) {
-      console.log(orderID.id);
-      const formData = new FormData();
-      formData.append("_method", "put");
-      formData.append("status", this.statusError);
+    cancelOrder(orderID) {
+      console.log("delete report order ==>", orderID.id);
 
-      const token = localStorage.getItem("token");
-      axios
-        .post("api/order/" + orderID.id, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Accept: "application/json",
-            Authorization: "Bearer " + token,
-          },
-        })
-        .then(({ data }) => {
+      Swal.fire({
+        title: "ຕ້ອງການລຶບແທ້ບໍ່ ?",
+        text: "Are you sure ?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "ຕົກລົງ",
+        cancelButtonText: "ຍົກເລີກ",
+        iconColor: "#ffa334",
+        width: 600,
+        padding: "3em",
+        position: "center",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const token = localStorage.getItem("token");
+
+          await axios.delete("http://localhost:8000/api/order/" + orderID.id, {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          });
+
           Swal.fire({
             position: "center",
-            icon: "info",
-            title: "ລາຍງານບັນຫາແລ້ວ",
-            text: "Report problem !!",
+            icon: "success",
+            title: "ດຳເນີນການສຳເລັດ !",
+            text: "Successful !",
             showConfirmButton: false,
-            iconColor: "#ffa334",
+            iconColor: "limegreen",
             width: 600,
             padding: "3em",
             timer: 1500,
           });
+          // this.$router.push({ path: "/user" });
           setTimeout(() => {
             window.location.reload();
           }, 1000);
-          // alert("ດຳເນີນການສຳເລັດ");
-          console.log(data);
-        });
+        }
+      });
     },
     //---------------------------------------------------------------------------------------------//
   },
@@ -303,15 +367,24 @@ html,
 body {
   font-family: "Noto Sans Lao", sans-serif;
 }
-
+.card-cont {
+  padding: 1rem;
+}
+.table-body {
+  height: 400px;
+  overflow: auto;
+}
+.search {
+  width: 500px;
+}
 
 .card-content {
   margin: 1rem 0;
   // padding: 0 2rem;
-  height: 480px;
+  // height: 480px;
   overflow: auto;
   border-radius: 10px;
-  background-color: #fff;
+  // background-color: #fff;
 }
 .table {
   th {
