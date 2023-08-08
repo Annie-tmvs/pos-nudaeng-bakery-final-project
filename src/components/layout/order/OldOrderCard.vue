@@ -1,7 +1,12 @@
 <template>
   <div>
+    <div class="d-flex justify-content-end mt-3">
+      <b-button v-b-modal.modal5 variant="primary">
+        <i class="fa-solid fa-print fa-sm p-2"></i> Print
+      </b-button>
+    </div>
     <div class="card-content">
-      <table class="table">
+      <table class="table table-first">
         <thead>
           <tr>
             <th class="th-cont1" style="border-radius: 10px 0 0 10px"></th>
@@ -14,7 +19,7 @@
           </tr>
         </thead>
         <tbody v-for="(item, i) in info" :key="i.id">
-          <tr v-show="item.status == 1">
+          <tr v-show="item.status == 1 && item.roles == 'Customer'">
             <td class="td-cont1"></td>
             <td>{{ item.id }}</td>
             <td>
@@ -37,7 +42,7 @@
               <div
                 class="btn"
                 tag="text"
-                v-b-modal.modal-scrollable
+                v-b-modal.modal4
                 @click="oldOrderById(item.id)"
               >
                 <p>
@@ -50,9 +55,10 @@
         </tbody>
       </table>
     </div>
+
     <!-- Modal -->
     <div v-if="oldOrderID">
-      <b-modal id="modal-scrollable" size="lg" hide-footer>
+      <b-modal id="modal4" size="lg" hide-footer>
         <div class="modal-content">
           <div class="head-content">
             <h4>ລາຍລະອຽດ</h4>
@@ -141,10 +147,103 @@
         </div>
       </b-modal>
     </div>
+    <!-- modal bill---------------------------------------------------------------------------------------------->
+    <b-modal id="modal5" size="md" hide-footer>
+      <!-- {{ items }} -->
+      <div v-for="(bill, i) in items" :key="i">
+        <!-- {{ bill.id }} -->
+        <div v-if="bill.status == 1 && bill.roles == 'Customer'">
+          <div id="pdfRef" class="my-5 bill-content" style="padding: 0, 1rem">
+            <div class="d-flex justify-content-center">
+              <img width="180" alt="image" src="../../../assets/nudaeng.png" />
+            </div>
+            <div class="text-center mb-3">
+              <h6>RECEIPT</h6>
+              <p>Nudaeng Bakery</p>
+              <p class="mt-2">Tel: 020 98256261</p>
+            </div>
+            <div class="py-2">
+              <div
+                class="d-flex flex-row justify-content-between align-items-end"
+              >
+                <div>
+                  <p>
+                    <small><b>ຕິດຕາມ:</b></small>
+                  </p>
+                  <p><small>Instagram: nudaeng_bakery</small></p>
+                  <h6><small>Facebook: Nudaeng Bakery</small></h6>
+                </div>
+                <div>
+                  <p>
+                    <small><b>ລະຫັດບິນ: </b>{{ bill.id }}</small>
+                  </p>
+                  <p>
+                    <small
+                      >ວັນທີ:
+                      {{
+                        new Date(bill.created_at)
+                          .toLocaleString()
+                          .substring(0, 8)
+                      }}</small
+                    >
+                  </p>
+                  <h6>
+                    <small
+                      >ເວລາ:
+                      {{
+                        new Date(bill.created_at)
+                          .toLocaleString()
+                          .substring(21, 9)
+                      }}</small
+                    >
+                  </h6>
+                </div>
+              </div>
+            </div>
+            <div>
+              <p><b>ພະນັກງານຂາຍ: </b>{{ bill.firstname }}</p>
+              <hr class="mt-3" />
+              <table class="table text-center">
+                <thead>
+                  <tr>
+                    <th class="text-start">ຊື່ສຶນຄ້າ</th>
+                    <th>ຈຳນວນ</th>
+                    <th>ລາຄາ/ຫົວໜ່ວຍ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(pro, i) in bill.order_detail" :key="i">
+                    <td class="text-start">{{ pro.name }}</td>
+                    <td>{{ pro.quantity }}</td>
+                    <td>{{ pro.price }} kip/ {{ pro.unit }}</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr class="text-start" collapse="3">
+                    <td colspan="3">
+                      <b>ລາຄາລວມ: </b>{{ bill.price_total }} ກີບ
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button @click="exportPDF" style="width: 100px; height: 50px">
+              <i class="fa-solid fa-print"></i> print
+            </button>
+          </div>
+          <hr class="mt-3" />
+        </div>
+      </div>
+    </b-modal>
   </div>
 </template>
 
 <script>
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { ref } from "vue";
 import moment from "moment";
 import axios from "axios";
 export default {
@@ -157,6 +256,8 @@ export default {
       info: [],
       showModalInfo: null,
       oldOrderID: null,
+
+      items: "",
     };
   },
   mounted() {
@@ -169,6 +270,23 @@ export default {
       })
       .then((res) => {
         this.info = res.data.reverse();
+      });
+    //------------------------------------------------------------------------------------------//
+    axios
+      .get("api/allorderwithdetail", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        const newItem = response.data.reverse();
+        console.log("roles allow ===>", newItem);
+
+        this.items = response.data;
+        console.log(this.items);
+      })
+      .catch((e) => {
+        console.log(e);
       });
   },
   methods: {
@@ -189,6 +307,49 @@ export default {
           console.log(oldOrderID);
         });
     },
+    //------------------------------------------------------------------------------------------------//
+    exportPDF() {
+      const input = document.getElementById("pdfRef");
+      html2canvas(input).then((canvas) => {
+        const imgWidth = 208;
+        const pageHeight = 295;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+        heightLeft -= pageHeight;
+        const doc = new jsPDF("p", "mm");
+        doc.addImage(
+          canvas,
+          "PNG",
+          0,
+          position,
+          imgWidth,
+          imgHeight,
+          "",
+          "FAST"
+        );
+        heightLeft -= 148;
+
+        // Output the PDF as a Blob
+        const pdfBlob = doc.output("blob");
+
+        // Create a URL for the Blob
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+
+        // Open the PDF in a new tab
+        const newTab = window.open(pdfUrl, "_blank");
+
+        // Optionally revoke the URL after some time to free up memory
+        setTimeout(() => {
+          URL.revokeObjectURL(pdfUrl);
+        }, 1000);
+
+        // Wait for the new tab to load and trigger the print function
+        newTab.onload = () => {
+          newTab.print();
+        };
+      });
+    },
   },
 };
 </script>
@@ -203,6 +364,11 @@ export default {
 //   background-color: black;
 //   color: white;
 // }
+.bill-content {
+  // background-color: #c66060;
+  padding: 1rem;
+  top: 1rem;
+}
 
 html,
 body {
@@ -210,14 +376,14 @@ body {
 }
 
 .card-content {
-  margin: 1.5rem 0;
+  margin: 0.5rem 0;
   // padding: 0 2rem;
-  height: 360px;
+  height: 470px;
   overflow: auto;
   border-radius: 10px;
   background-color: rgb(255, 255, 255);
 }
-.table {
+.table-first {
   th {
     padding-bottom: 1rem;
     width: 100% * 0.16;

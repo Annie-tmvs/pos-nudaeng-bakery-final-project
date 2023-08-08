@@ -12,7 +12,21 @@
     </div>
     <hr class="my-3" />
     <div class="table-content">
-      <history-table />
+      <b-tabs
+        content-class="mt-3"
+        justified
+        pills
+        card
+        nav-class="bg-secondary d-flex align-items-center rounded"
+        active-nav-item-class="font-weight-bold text-uppercase bg-dark text-white py-3 rounded"
+      >
+        <b-tab title="ປະຫວັດມື້ນີ້" active title-link-class="text-white ">
+          <today-history />
+        </b-tab>
+        <b-tab title="ປະຫວັດທັງໝົດ" title-link-class="text-white">
+          <history-table />
+        </b-tab>
+      </b-tabs>
     </div>
   </div>
 </template>
@@ -22,8 +36,9 @@ import moment from "moment";
 import TableFilter from "@/components/layout/history/TableFilter.vue";
 import TableFilterTwo from "@/components/layout/history/TableFilterTwo.vue";
 import HistoryTable from "@/components/layout/history/historyTable.vue";
+import TodayHistory from "@/components/layout/history/todayHistory.vue";
 export default {
-  components: { TableFilter, TableFilterTwo, HistoryTable },
+  components: { TableFilter, TableFilterTwo, HistoryTable, TodayHistory },
   methods: {
     moment: function () {
       return moment();
