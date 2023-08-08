@@ -463,6 +463,7 @@ export default {
     },
     //--------------------------------------------------------------------------------//
     pdType(item) {
+      console.log("product by id: "+ item);
       const token = localStorage.getItem("token");
       axios
         .get("api/product_type/" + item, {
@@ -472,6 +473,8 @@ export default {
         })
         .then((response) => {
           this.productID = response.data;
+      console.log("product res: "+ productID);
+
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -500,6 +503,7 @@ export default {
           "api/order",
           {
             tel: this.userInfo.phone_number,
+            status: 1,
             location: "ໜ້າຮ້ານ",
             price_total: this.calculateTotalPrice(),
             order_details: this.cartItems.map((item) => ({
