@@ -105,6 +105,7 @@
 </template>
 
 <script>
+
 import axios from "axios";
 import LogOutForm from "../auth/LogOutForm.vue";
 export default {
@@ -130,7 +131,7 @@ export default {
     const token = localStorage.getItem("token");
     const id = localStorage.getItem("id");
 
-    console.log("hiiiii" + id);
+    console.log("hiiiii user" + id);
     axios
       .get("api/users/selOne/" + id, {
         headers: {

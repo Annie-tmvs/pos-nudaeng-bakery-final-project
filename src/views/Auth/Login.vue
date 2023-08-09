@@ -53,6 +53,7 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 import axios from "axios";
 export default {
   name: "LoginView",
@@ -90,6 +91,34 @@ export default {
         await axios
           .post("api/login", this.login)
           .then((res) => {
+            if (res.data.user.roles == "Customer") {
+              // alert("ທ່ານບໍ່ມີສິດເຂົ້າເຖິງ !");
+              Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "ທ່ານບໍ່ມີສິດເຂົ້າເຖິງ !!",
+                text: "something was wrong !!",
+                showConfirmButton: true,
+                width: 600,
+                padding: "3em",
+                iconColor: "crimson",
+                confirmButtonText: "ຕົກລົງ",
+                confirmButtonColor: "#1d2186",
+              });
+              return;
+            }
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "ເຂົ້າສູ່ລະບົບສຳເລັດ !",
+              text: "Successful !",
+              showConfirmButton: false,
+              iconColor: "limegreen",
+              width: 600,
+              padding: "3em",
+              timer: 1500,
+            });
+            console.log(res.data);
             let token = res.data.token;
             localStorage.setItem("id", res.data.user.id);
 
@@ -98,15 +127,39 @@ export default {
             this.$router.replace("/");
             setTimeout(() => {
               window.location.reload();
-            }, 10);
-            //window.location.reload();
+            }, 1000);
+            // window.location.reload();
           })
           .catch((error) => {
+            Swal.fire({
+              position: "center",
+              icon: "error",
+              title: "ກະລຸນາກວດສອບຂໍ້ມູນຂອງທ່ານອີກຄັ້ງ !",
+              text: "something was wrong !!",
+              showConfirmButton: true,
+              width: 600,
+              padding: "3em",
+              iconColor: "crimson",
+              confirmButtonText: "ຕົກລົງ",
+              confirmButtonColor: "#1d2186",
+            });
             console.log(error);
-            alert("ກະລຸນາກວດສອບຂໍ້ມູນຂອງທ່ານອີກຄັ້ງ !");
+            // alert("ກະລຸນາກວດສອບຂໍ້ມູນຂອງທ່ານອີກຄັ້ງ !");
           });
       } else {
-        alert("ກະລຸນາກວດສອບສິດຂອງທ່ານອີກຄັ້ງ !");
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "ກະລຸນາກວດສອບສິດຂອງທ່ານອີກຄັ້ງ !",
+          text: "something was wrong !!",
+          showConfirmButton: true,
+          width: 600,
+          padding: "3em",
+          iconColor: "crimson",
+          confirmButtonText: "ຕົກລົງ",
+          confirmButtonColor: "#1d2186",
+        });
+        // alert("ກະລຸນາກວດສອບສິດຂອງທ່ານອີກຄັ້ງ !");
       }
     },
   },

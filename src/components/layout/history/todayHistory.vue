@@ -18,7 +18,7 @@
               ຍອດຂາຍມື້ນີ້:
               <b class="text-warning">
                 {{
-                  items.filter(
+                  todayItem.filter(
                     (item) =>
                       new Date(item.created_at)
                         .toLocaleString()
@@ -42,6 +42,10 @@
         :items="todayItem"
         :search="search"
       >
+        <template v-slot:item.status="{ item }">
+          <i class="fa-solid fa-circle-check fa-md p-2 text-success"></i
+          ><span>ດຳເນີນການສຳເລັດ</span>
+        </template>
         <template v-slot:item.created_at="{ item }">
           {{ new Date(item.created_at).toLocaleString() }}
         </template>
@@ -174,7 +178,8 @@ export default {
           sortable: false,
           value: "id",
         },
-        { text: "ລະຫັດພະນັກງານ", value: "user_id" },
+        { text: "ສະຖານະ", value: "status" },
+        { text: "User Id", value: "user_id" },
         { text: "role", value: "roles" },
         { text: "ເວລາ", value: "created_at" },
         { text: "ລາຄາລວມ", value: "price_total" },
@@ -196,7 +201,7 @@ export default {
         this.todayItem = response.data.filter(
           (item) =>
             new Date(item.created_at).toLocaleString().substring(0, 8) ==
-            moment().format("M/D/yy")
+              moment().format("M/D/yy") && item.status == "1"
         );
         console.log(items);
       })

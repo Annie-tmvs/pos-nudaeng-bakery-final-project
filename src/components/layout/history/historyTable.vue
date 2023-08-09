@@ -18,7 +18,7 @@
               ຍອດຂາຍມື້ນີ້:
               <b class="text-warning">
                 {{
-                  items.filter(
+                  allItems.filter(
                     (item) =>
                       new Date(item.created_at)
                         .toLocaleString()
@@ -31,7 +31,8 @@
           </div>
           <div class="card">
             <h6>
-              ຍອດຂາຍທັງໝົດ: <b class="text-info"> {{ items.length }}</b> ສິນຄ້າ
+              ຍອດຂາຍທັງໝົດ:
+              <b class="text-info"> {{ allItems.length }}</b> ສິນຄ້າ
             </h6>
           </div>
         </div>
@@ -39,9 +40,13 @@
       <v-data-table
         class="table-body"
         :headers="headers"
-        :items="items"
+        :items="allItems"
         :search="search"
       >
+        <template v-slot:item.status="{ item }">
+          <i class="fa-solid fa-circle-check fa-md p-2 text-success"></i
+              ><span>ດຳເນີນການສຳເລັດ</span>
+        </template>
         <template v-slot:item.created_at="{ item }">
           {{ new Date(item.created_at).toLocaleString() }}
         </template>
@@ -166,6 +171,7 @@ export default {
       historyDetail: [],
       viewItem: null,
       items: [],
+      allItems: [],
       headers: [
         {
           text: "ເລກບິນ",
@@ -173,6 +179,7 @@ export default {
           sortable: false,
           value: "id",
         },
+        { text: "ສະຖານະ", value: "status" },
         { text: "ລະຫັດພະນັກງານ", value: "user_id" },
         { text: "role", value: "roles" },
         { text: "ເວລາ", value: "created_at" },
@@ -192,6 +199,8 @@ export default {
       })
       .then((response) => {
         this.items = response.data.reverse();
+        this.allItems = response.data.filter((item) => item.status == "1");
+
         console.log(items);
       })
       .catch((e) => {

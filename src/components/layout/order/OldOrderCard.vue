@@ -1,12 +1,65 @@
 <template>
   <div>
-    <div class="d-flex justify-content-end mt-3">
-      <b-button v-b-modal.modal5 variant="primary">
-        <i class="fa-solid fa-print fa-sm p-2"></i> Print
-      </b-button>
-    </div>
     <div class="card-content">
-      <table class="table table-first">
+      <v-card class="card-cont">
+        <v-card-title class="search-bar">
+          <div class="search">
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+          </div>
+          <v-spacer></v-spacer>
+        </v-card-title>
+        <v-data-table
+          class="table-body"
+          :headers="headers"
+          :items="info"
+          :search="search"
+        >
+          <template v-slot:item.created_at="{ item }">
+            {{ new Date(item.created_at).toLocaleString() }}
+          </template>
+          <template v-slot:item.status="{ item }">
+            <i class="fa-solid fa-circle-check fa-md p-2 text-success"></i
+            ><span>ດຳເນີນການສຳເລັດ</span>
+          </template>
+          <template v-slot:item.action="{ item }">
+            <div class="d-flex flex-row gap-2">
+              <div tag="btn" v-b-modal.modal4 @click="oldOrderById(item.id)">
+                <p style="color: #e0852a">
+                  <i class="fa-solid fa-file-lines fa-sm p-2"></i>
+                  ລາຍລະອຽດ
+                </p>
+              </div>
+              <p>||</p>
+              <div
+                tag="btn"
+                v-b-modal.modal5
+                variant="primary"
+                @click="printById(item.id)"
+              >
+                <p style="color: #304cb5">
+                  <i class="fa-solid fa-print fa-sm p-2"></i> Print
+                </p>
+              </div>
+            </div>
+            <!-- <div class="d-flex justify-content-end mt-3">
+              <b-button
+                v-b-modal.modal5
+                variant="primary"
+                @click="printById(item.id)"
+              >
+                <i class="fa-solid fa-print fa-sm p-2"></i> Print
+              </b-button>
+            </div> -->
+          </template>
+        </v-data-table>
+      </v-card>
+      <!-- <table class="table table-first">
         <thead>
           <tr>
             <th class="th-cont1" style="border-radius: 10px 0 0 10px"></th>
@@ -18,8 +71,8 @@
             <th style="border-radius: 0 10px 10px 0"></th>
           </tr>
         </thead>
-        <tbody v-for="(item, i) in info" :key="i.id">
-          <tr v-show="item.status == 1 && item.roles == 'Customer'">
+        <tbody v-for="(item, i) in infoFilter" :key="i.id">
+          <tr v-if="item.status == 1">
             <td class="td-cont1"></td>
             <td>{{ item.id }}</td>
             <td>
@@ -53,7 +106,7 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
     </div>
 
     <!-- Modal -->
@@ -148,12 +201,11 @@
       </b-modal>
     </div>
     <!-- modal bill---------------------------------------------------------------------------------------------->
-    <b-modal id="modal5" size="md" hide-footer>
-      <!-- {{ items }} -->
-      <div v-for="(bill, i) in items" :key="i">
-        <!-- {{ bill.id }} -->
-        <div v-if="bill.status == 1 && bill.roles == 'Customer'">
-          <div id="pdfRef" class="my-5 bill-content" style="padding: 0, 1rem">
+    <div v-if="print">
+      <b-modal id="modal5" size="md" hide-footer class="modal-content">
+        <!-- {{ print }} -->
+        <div id="pdfRef">
+          <div class="my-5 bill-content">
             <div class="d-flex justify-content-center">
               <img width="180" alt="image" src="../../../assets/nudaeng.png" />
             </div>
@@ -170,28 +222,28 @@
                   <p>
                     <small><b>ຕິດຕາມ:</b></small>
                   </p>
-                  <p><small>Instagram: nudaeng_bakery</small></p>
+                  <h6><small>Instagram: nudaeng_bakery</small></h6>
                   <h6><small>Facebook: Nudaeng Bakery</small></h6>
                 </div>
                 <div>
                   <p>
-                    <small><b>ລະຫັດບິນ: </b>{{ bill.id }}</small>
+                    <small><b>ລະຫັດບິນ: </b>{{ print.id }}</small>
                   </p>
-                  <p>
+                  <h6>
                     <small
                       >ວັນທີ:
                       {{
-                        new Date(bill.created_at)
+                        new Date(print.created_at)
                           .toLocaleString()
                           .substring(0, 8)
                       }}</small
                     >
-                  </p>
+                  </h6>
                   <h6>
                     <small
                       >ເວລາ:
                       {{
-                        new Date(bill.created_at)
+                        new Date(print.created_at)
                           .toLocaleString()
                           .substring(21, 9)
                       }}</small
@@ -201,7 +253,8 @@
               </div>
             </div>
             <div>
-              <p><b>ພະນັກງານຂາຍ: </b>{{ bill.firstname }}</p>
+              <h6><b>ລູກຄ້າ: </b>{{ print.firstname }}</h6>
+              <h6><b>ເບີຕິດຕໍ່: </b>{{ print.tel }}</h6>
               <hr class="mt-3" />
               <table class="table text-center">
                 <thead>
@@ -212,7 +265,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(pro, i) in bill.order_detail" :key="i">
+                  <tr v-for="(pro, i) in print.order_detail" :key="i">
                     <td class="text-start">{{ pro.name }}</td>
                     <td>{{ pro.quantity }}</td>
                     <td>{{ pro.price }} kip/ {{ pro.unit }}</td>
@@ -221,22 +274,43 @@
                 <tfoot>
                   <tr class="text-start" collapse="3">
                     <td colspan="3">
-                      <b>ລາຄາລວມ: </b>{{ bill.price_total }} ກີບ
+                      <b>ລາຄາລວມ: </b>{{ print.price_total }} ກີບ
                     </td>
                   </tr>
                 </tfoot>
               </table>
             </div>
+            <div
+              style="
+                word-wrap: break-word;
+                white-space: pre-wrap;
+                white-space: -moz-pre-wrap;
+                white-space: -pre-wrap;
+                white-space: -o-pre-wrap;
+                padding-bottom: 5rem;
+              "
+            >
+              <h6>
+                <b>ສະຖານທີ່ຈັດສົ່ງ: </b>
+                <span>
+                  {{ print.location }}
+                </span>
+              </h6>
+            </div>
+            <div class="text-center">
+              <h6><b>ຂໍຂອບໃຈ</b></h6>
+              <small>Thanks you !</small>
+            </div>
           </div>
-          <div class="d-flex justify-content-end">
-            <button @click="exportPDF" style="width: 100px; height: 50px">
-              <i class="fa-solid fa-print"></i> print
-            </button>
-          </div>
-          <hr class="mt-3" />
         </div>
-      </div>
-    </b-modal>
+        <hr class="mt-3" />
+        <div class="d-flex justify-content-end">
+          <button @click="exportPDF" style="width: 100px; height: 50px">
+            <i class="fa-solid fa-print"></i> print
+          </button>
+        </div>
+      </b-modal>
+    </div>
   </div>
 </template>
 
@@ -253,11 +327,27 @@ export default {
   },
   data() {
     return {
+      search: "",
       info: [],
+      infoFilter: [],
       showModalInfo: null,
       oldOrderID: null,
-
+      print: [],
       items: "",
+      headers: [
+        {
+          text: "ເລກບິນ",
+          align: "start",
+          sortable: false,
+          value: "id",
+        },
+        { text: "ລູກຄ້າ", value: "user_id" },
+        { text: "ເວລາ", value: "created_at" },
+        // { text: "role", value: "roles" },
+        { text: "ສະຖານະ", value: "status" },
+        // { text: "ຊຳລະ", value: "receipt_image" },
+        { text: "action", value: "action" },
+      ],
     };
   },
   mounted() {
@@ -269,25 +359,30 @@ export default {
         },
       })
       .then((res) => {
-        this.info = res.data.reverse();
+        // this.infoFilter = res.data.filter((item) => item.roles == "Customer");
+        const newinfo = res.data.filter(
+          (item) => item.roles == "Customer" && item.status == "1"
+        );
+        this.info = newinfo.reverse();
       });
     //------------------------------------------------------------------------------------------//
-    axios
-      .get("api/allorderwithdetail", {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((response) => {
-        const newItem = response.data.reverse();
-        console.log("roles allow ===>", newItem);
+    // axios
+    //   .get("api/allorderwithdetail", {
+    //     headers: {
+    //       Authorization: "Bearer " + token,
+    //     },
+    //   })
+    //   .then((response) => {
+    //     const newItem = response.data.reverse();
 
-        this.items = response.data;
-        console.log(this.items);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    //     console.log("roles allow ===>", newItem);
+
+    //     this.items = response.data;
+    //     console.log(this.items);
+    //   })
+    //   .catch((e) => {
+    //     console.log(e);
+    //   });
   },
   methods: {
     moment: function () {
@@ -307,12 +402,26 @@ export default {
           console.log(oldOrderID);
         });
     },
+    printById(printItem) {
+      console.log("print order:" + printItem);
+      const token = localStorage.getItem("token");
+      axios
+        .get("api/getOrderById/" + printItem, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((res) => {
+          this.print = res.data;
+          console.log(printItem);
+        });
+    },
     //------------------------------------------------------------------------------------------------//
     exportPDF() {
       const input = document.getElementById("pdfRef");
       html2canvas(input).then((canvas) => {
-        const imgWidth = 208;
-        const pageHeight = 295;
+        const imgWidth = 124;
+        const pageHeight = 100;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         let heightLeft = imgHeight;
         let position = 0;
@@ -365,6 +474,7 @@ export default {
 //   color: white;
 // }
 .bill-content {
+  // border: 1px solid black;
   // background-color: #c66060;
   padding: 1rem;
   top: 1rem;
@@ -375,13 +485,24 @@ body {
   font-family: "Noto Sans Lao", sans-serif;
 }
 
+.card-cont {
+  padding: 1rem;
+}
+.table-body {
+  height: 380px;
+  overflow: auto;
+}
+.search {
+  width: 500px;
+}
+
 .card-content {
-  margin: 0.5rem 0;
+  margin: 1rem 0;
   // padding: 0 2rem;
-  height: 470px;
+  // height: 480px;
   overflow: auto;
   border-radius: 10px;
-  background-color: rgb(255, 255, 255);
+  // background-color: #fff;
 }
 .table-first {
   th {
