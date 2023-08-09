@@ -13,7 +13,10 @@
         </div>
         <div class="d-flex flex-direction-row gap-2">
           <div class="card">
-            <!-- <p>{{ moment().format("M/D/yy") }}</p> -->
+            <p>{{ moment().format("M/D/yy") }}</p>
+            <p>{{ new Date(todayItem.created_at)
+                        .toLocaleString()
+                        .substring(0, 8) }}</p>
             <h6>
               ຍອດຂາຍມື້ນີ້:
               <b class="text-warning">
