@@ -24,10 +24,12 @@
                   todayItem.filter(
                     (item) =>
                       new Date(item.created_at)
-                        .toLocaleString()
-                        .substring(0, 8) == moment().format("M/D/yy")
+                        .toLocaleString("nl-NL")
+                        .substring(0, 10) ==
+                      new Date().toLocaleString("nl-NL").substring(0, 10)
                   ).length
-                }}</b
+                }}
+                </b
               >
               ສິນຄ້າ
             </h6>
@@ -50,7 +52,7 @@
           ><span>ດຳເນີນການສຳເລັດ</span>
         </template>
         <template v-slot:item.created_at="{ item }">
-          {{ new Date(item.created_at).toLocaleString() }}
+          {{ new Date(item.created_at).toLocaleString("nl-NL") }}
         </template>
         <template v-slot:item.action="{ item }">
           <b-button
@@ -84,15 +86,15 @@
                   ວັນທີ:
                   {{
                     new Date(viewItem.created_at)
-                      .toLocaleString()
-                      .substring(0, 8)
+                      .toLocaleString("nl-NL")
+                      .substring(0, 10)
                   }}
                 </h6>
                 <h6>
                   ເວລາ :
                   {{
                     new Date(viewItem.created_at)
-                      .toLocaleString()
+                      .toLocaleString("nl-NL")
                       .substring(21, 9)
                   }}
                 </h6>
@@ -201,10 +203,14 @@ export default {
       })
       .then((response) => {
         this.items = response.data.reverse();
+        // this.todayItem = response.data.filter((item) => item.status == "1");
         this.todayItem = response.data.filter(
           (item) =>
-            new Date(item.created_at).toLocaleString().substring(0, 8) ==
-              moment().format("M/D/yy") && item.status == "1"
+            new Date(item.created_at)
+              .toLocaleString("nl-NL")
+              .substring(0, 10) ==
+              new Date().toLocaleString("nl-NL").substring(0, 10) &&
+            item.status == "1"
         );
         console.log(items);
       })
