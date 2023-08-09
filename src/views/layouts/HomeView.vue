@@ -261,98 +261,89 @@
     <b-modal id="modal-scrollable" size="md" hide-footer>
       <!-- {{ items }} -->
       <div v-for="(bill, i) in items" :key="i">
-        <div
-          v-if="
-            bill.roles == 'Owner' ||
-            bill.roles == 'OWNER' ||
-            bill.roles == 'Admin' ||
-            bill.roles == 'ADMIN' ||
-            bill.roles == 'Employee' ||
-            bill.roles == 'EMPLOYEE'
-          "
-        >
-          <div id="pdfRef" class="my-5 bill-content" style="padding: 0, 1rem">
-            <div class="d-flex justify-content-center">
-              <img width="180" alt="image" src="../../assets/nudaeng.png" />
-            </div>
-            <div class="text-center mb-3">
-              <h6>RECEIPT</h6>
-              <p>Nudaeng Bakery</p>
-              <p class="mt-2">Tel: 020 98256261</p>
-            </div>
-            <div class="py-2">
-              <div
-                class="d-flex flex-row justify-content-between align-items-end"
-              >
-                <div>
-                  <p>
-                    <small><b>ຕິດຕາມ:</b></small>
-                  </p>
-                  <p><small>Instagram: nudaeng_bakery</small></p>
-                  <h6><small>Facebook: Nudaeng Bakery</small></h6>
-                </div>
-                <div>
-                  <p>
-                    <small><b>ລະຫັດບິນ: </b>{{ bill.id }}</small>
-                  </p>
-                  <p>
-                    <small
-                      >ວັນທີ:
-                      {{
-                        new Date(bill.created_at)
-                          .toLocaleString()
-                          .substring(0, 8)
-                      }}</small
-                    >
-                  </p>
-                  <h6>
-                    <small
-                      >ເວລາ:
-                      {{
-                        new Date(bill.created_at)
-                          .toLocaleString()
-                          .substring(21, 9)
-                      }}</small
-                    >
-                  </h6>
-                </div>
+        <div id="pdfRef" class="mt-5 bill-content" style="padding: 0, 1rem">
+          <div class="d-flex justify-content-center">
+            <img width="180" alt="image" src="../../assets/nudaeng.png" />
+          </div>
+          <div class="text-center mb-3">
+            <h6>RECEIPT</h6>
+            <p>Nudaeng Bakery</p>
+            <p class="mt-2">Tel: 020 98256261</p>
+          </div>
+          <div class="py-2">
+            <div
+              class="d-flex flex-row justify-content-between align-items-end"
+            >
+              <div>
+                <p>
+                  <small><b>ຕິດຕາມ:</b></small>
+                </p>
+                <p><small>Instagram: nudaeng_bakery</small></p>
+                <h6><small>Facebook: Nudaeng Bakery</small></h6>
+              </div>
+              <div>
+                <p>
+                  <small><b>ລະຫັດບິນ: </b>{{ bill.id }}</small>
+                </p>
+                <p>
+                  <small
+                    >ວັນທີ:
+                    {{
+                      new Date(bill.created_at).toLocaleString().substring(0, 8)
+                    }}</small
+                  >
+                </p>
+                <h6>
+                  <small
+                    >ເວລາ:
+                    {{
+                      new Date(bill.created_at)
+                        .toLocaleString()
+                        .substring(21, 9)
+                    }}</small
+                  >
+                </h6>
               </div>
             </div>
-            <div>
-              <p><b>ພະນັກງານຂາຍ: </b>{{ bill.firstname }}</p>
-              <hr class="mt-3" />
-              <table class="table text-center">
-                <thead>
-                  <tr>
-                    <th class="text-start">ຊື່ສຶນຄ້າ</th>
-                    <th>ຈຳນວນ</th>
-                    <th>ລາຄາ/ຫົວໜ່ວຍ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(pro, i) in bill.order_detail" :key="i">
-                    <td class="text-start">{{ pro.name }}</td>
-                    <td>{{ pro.quantity }}</td>
-                    <td>{{ pro.price }} kip/ {{ pro.unit }}</td>
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr class="text-start" collapse="3">
-                    <td colspan="3">
-                      <b>ລາຄາລວມ: </b>{{ bill.price_total }} ກີບ
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
           </div>
-          <div class="d-flex justify-content-end">
-            <button @click="exportPDF" style="width: 100px; height: 50px">
-              <i class="fa-solid fa-print"></i> print
-            </button>
+          <div>
+            <p><b>ພະນັກງານຂາຍ: </b>{{ bill.firstname }}</p>
+            <hr class="mt-3" />
+            <table class="table text-center">
+              <thead>
+                <tr>
+                  <th class="text-start">ຊື່ສຶນຄ້າ</th>
+                  <th>ຈຳນວນ</th>
+                  <th>ລາຄາ/ຫົວໜ່ວຍ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(pro, i) in bill.order_detail" :key="i">
+                  <td class="text-start">{{ pro.name }}</td>
+                  <td>{{ pro.quantity }}</td>
+                  <td>{{ pro.price }} kip/ {{ pro.unit }}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="text-start" collapse="3">
+                  <td colspan="3">
+                    <b>ລາຄາລວມ: </b>{{ bill.price_total }} ກີບ
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
-          <hr class="mt-3" />
+          <div class="text-center" style="padding-top: 4rem">
+            <h6><b>ຂໍຂອບໃຈ</b></h6>
+            <small>Thanks you !</small>
+          </div>
         </div>
+      </div>
+      <hr class="mt-3" />
+      <div class="d-flex justify-content-end">
+        <button @click="exportPDF" style="width: 100px; height: 50px">
+          <i class="fa-solid fa-print"></i> print
+        </button>
       </div>
     </b-modal>
   </div>
@@ -431,10 +422,15 @@ export default {
         },
       })
       .then((response) => {
-        const newItem = response.data.reverse();
-        console.log("roles allow ===>" + newItem);
+        // const newItem = response.data.reverse();
+        // console.log("roles allow ===>" + newItem);
+        const newinfo = response.data.filter(
+          (item) => item.roles !== "Customer" && item.status == "1"
+        );
+        const info = newinfo.reverse();
+        const slicedItems = info.slice(0, 1); // Change the range as needed
 
-        this.items = newItem;
+        this.items = slicedItems;
         console.log(this.items);
       })
       .catch((e) => {
@@ -534,6 +530,7 @@ export default {
     //------------------------------------------------------------------------------------//
     submitOrder() {
       console.log("submit order");
+
       const token = localStorage.getItem("token");
       axios
         .post(
@@ -595,8 +592,8 @@ export default {
     exportPDF() {
       const input = document.getElementById("pdfRef");
       html2canvas(input).then((canvas) => {
-        const imgWidth = 208;
-        const pageHeight = 295;
+        const imgWidth = 124;
+        const pageHeight = 100;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         let heightLeft = imgHeight;
         let position = 0;
@@ -912,5 +909,6 @@ input:focus {
   // background-color: #c66060;
   padding: 1rem;
   top: 1rem;
+  // border: 1px solid black;
 }
 </style>

@@ -1,7 +1,43 @@
 <template>
   <div>
     <div class="card-content">
-      <table class="table">
+      <v-card class="card-cont">
+        <v-card-title class="search-bar">
+          <div class="search">
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+          </div>
+        </v-card-title>
+        <v-data-table
+          class="table-body"
+          :headers="headers"
+          :items="items"
+          :search="search"
+        >
+          <template v-slot:item.created_at="{ item }">
+            {{ new Date(item.created_at).toLocaleString() }}
+          </template>
+          <template v-slot:item.status="{ item }">
+            <i class="fa-solid fa-spinner fa-md p-2 text-warning"></i
+            ><span>ກຳລັງລໍຖ້າດຳເນີນການ</span>
+          </template>
+          <template v-slot:item.action="{ item }">
+            <div tag="btn" v-b-modal.modal1 @click="orderById(item.id)">
+              <p style="color: #1d2186">
+                <i class="fa-solid fa-truck-ramp-box fa-sm p-2"></i>
+                ດຳເນີນການ
+              </p>
+            </div>
+          </template>
+        </v-data-table>
+      </v-card>
+
+      <!-- <table class="table">
         <thead>
           <tr>
             <th class="th-cont1" style="border-radius: 10px 0 0 10px"></th>
@@ -50,7 +86,7 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
     </div>
     <!-- Modal -->
 
@@ -174,10 +210,25 @@ export default {
   components: {},
   data() {
     return {
+      search: "",
       items: [],
       orderID: null,
       status: 1,
       statusError: 2,
+      headers: [
+        {
+          text: "ເລກບິນ",
+          align: "start",
+          sortable: false,
+          value: "id",
+        },
+        { text: "ລູກຄ້າ", value: "user_id" },
+        { text: "ເວລາ", value: "created_at" },
+        // { text: "role", value: "roles" },
+        { text: "ສະຖານະ", value: "status" },
+        // { text: "ຊຳລະ", value: "receipt_image" },
+        { text: "action", value: "action" },
+      ],
     };
   },
   mounted() {
@@ -189,7 +240,8 @@ export default {
         },
       })
       .then((res) => {
-        this.items = res.data.reverse();
+        const filterItem = res.data.filter((item) => item.status == 0);
+        this.items = filterItem.reverse();
         console.log(items);
       });
   },
@@ -303,15 +355,23 @@ html,
 body {
   font-family: "Noto Sans Lao", sans-serif;
 }
-
-
+.card-cont {
+  padding: 1rem;
+}
+.table-body {
+  height: 385px;
+  overflow: auto;
+}
+.search {
+  width: 500px;
+}
 .card-content {
   margin: 1rem 0;
   // padding: 0 2rem;
-  height: 480px;
+  // height: 480px;
   overflow: auto;
   border-radius: 10px;
-  background-color: #fff;
+  // background-color: #fff;
 }
 .table {
   th {
